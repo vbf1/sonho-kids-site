@@ -817,3 +817,46 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 @media (max-width: 700px) {
   .location-section { padding-inline: 18px; }
 }
+
+
+/* Conteúdo local de SEO: informação útil e legível para quem procura locação. */
+.seo-intro-section {
+  padding: clamp(42px, 6vw, 68px) 24px;
+  background: #fff;
+}
+.seo-intro-content {
+  width: min(100%, 850px);
+  margin: 0 auto;
+  text-align: center;
+}
+.seo-intro-content h2 {
+  margin: 8px 0 14px;
+  color: #292747;
+  font: 800 clamp(25px, 4vw, 34px)/1.2 'Baloo 2', sans-serif;
+}
+.seo-intro-content p {
+  max-width: 760px;
+  margin: 0 auto;
+  color: #77778b;
+  font-size: 15px;
+  line-height: 1.8;
+}
+.seo-intro-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  margin-top: 20px;
+  color: #7253c8;
+  font-size: 14px;
+  font-weight: 900;
+}
+.seo-intro-link:focus-visible {
+  outline: 3px solid #f2b83e;
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+@media (max-width: 560px) {
+  .seo-intro-section { padding-inline: 18px; }
+  .seo-intro-content p { font-size: 14px; }
+}
