@@ -89,7 +89,11 @@ function App() {
     return () => window.removeEventListener('scroll', updateScrollState);
   }, []);
   if (window.location.pathname.replace(/\/+$/, '').endsWith('/admin') || window.location.hash === '#/admin') return <Admin />;
-  const configuredToys = toys.map((toy, index) => ({ ...toy, name: settingValue(content, `toy_${index + 1}_name`), detail: settingValue(content, `toy_${index + 1}_detail`) }));
+  let savedCatalog = null;
+  try { savedCatalog = content.catalog_items ? JSON.parse(content.catalog_items) : null; } catch { savedCatalog = null; }
+  const configuredToys = (Array.isArray(savedCatalog) ? savedCatalog : toys.map((toy, index) => ({ ...toy, id: toy.imageCategory, active: true, name: settingValue(content, `toy_${index + 1}_name`), detail: settingValue(content, `toy_${index + 1}_detail`) })))
+    .filter((toy) => toy.active !== false)
+    .map((toy) => ({ ...toy, imageCategory: toy.id || toy.imageCategory, visualLabel: toy.visualLabel || 'DIVERSÃO PARA SUA FESTA', emoji: toy.emoji || '🎈', color: toy.color || 'pink' }));
   const selectedToy = configuredToys.find((toy) => toy.imageCategory === new URLSearchParams(window.location.search).get('produto'));
   const whatsapp = whatsappLink(content);
   const instagram = settingValue(content, 'instagram_url');
