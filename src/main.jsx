@@ -15,10 +15,10 @@ function WhatsAppIcon({ size = 20 }) {
 const instagram = 'https://www.instagram.com/sonhokidsbrinquedos/';
 
 const toys = [
-  { number: '01', name: 'Cama elástica', detail: 'Pulos, energia e muita diversão para a criançada.', emoji: '🤸', color: 'pink', imageCategory: 'cama-elastica' },
-  { number: '02', name: 'Piscina de bolinhas', detail: 'Um espaço colorido para brincar e se divertir.', emoji: '🟡', color: 'blue', imageCategory: 'piscina-bolinhas' },
-  { number: '03', name: 'Máquina de pipoca', detail: 'O cheirinho e o sabor que combinam com festa.', emoji: '🍿', color: 'yellow', imageCategory: 'maquina-pipoca' },
-  { number: '04', name: 'Máquina de algodão-doce', detail: 'Um toque doce e especial para seu evento.', emoji: '🍭', color: 'purple', imageCategory: 'algodao-doce' },
+  { number: '01', name: 'Cama elástica', detail: 'Pulos, energia e muita diversão para a criançada.', emoji: '🤸', color: 'pink', imageCategory: 'cama-elastica', visualLabel: 'ENERGIA E MOVIMENTO', kind: 'BRINQUEDO' },
+  { number: '02', name: 'Piscina de bolinhas', detail: 'Um espaço colorido para brincar e se divertir.', emoji: '🟡', color: 'blue', imageCategory: 'piscina-bolinhas', visualLabel: 'UM MAR DE CORES', kind: 'BRINQUEDO' },
+  { number: '03', name: 'Máquina de pipoca', detail: 'O cheirinho e o sabor que combinam com festa.', emoji: '🍿', color: 'yellow', imageCategory: 'maquina-pipoca', visualLabel: 'SABOR DE FESTA', kind: 'MÁQUINA' },
+  { number: '04', name: 'Máquina de algodão-doce', detail: 'Um toque doce e especial para seu evento.', emoji: '🍭', color: 'purple', imageCategory: 'algodao-doce', visualLabel: 'UM TOQUE DE DOÇURA', kind: 'MÁQUINA' },
 ];
 
 const moments = [
@@ -102,8 +102,8 @@ function App() {
         <div className="toy-grid">{toys.map((toy) => {
           const toyImage = images.find((image) => image.category === toy.imageCategory);
           return <a className={`toy-card ${toy.color}`} key={toy.number} href={whatsappForToy(toy.name)} target="_blank" rel="noreferrer" aria-label={`Consultar ${toy.name} pelo WhatsApp`}>
-            <div className="toy-art"><span className="toy-number">{toy.number}</span>{toyImage ? <img className="real-site-photo" src={mediaUrl(toyImage.path)} alt={toy.name} loading="lazy" decoding="async"/> : <span className="toy-emoji">{toy.emoji}</span>}<span className="toy-spark">✦</span></div>
-            <div className="toy-info"><h3>{toy.name}</h3><p>{toy.detail}</p><span className="toy-card-cta">Consultar disponibilidade <ArrowUpRight size={15}/></span></div>
+            <div className="toy-art"><span className="toy-number">{toy.number}</span>{toyImage ? <img className="real-site-photo" src={mediaUrl(toyImage.path)} alt={toy.name} loading="lazy" decoding="async"/> : <div className="toy-placeholder"><span className="toy-placeholder-glow"/><span className="toy-emoji">{toy.emoji}</span><small>IMAGEM EM BREVE</small></div>}<span className="toy-art-caption">{toy.visualLabel}</span><span className="toy-spark">✦</span></div>
+            <div className="toy-info"><span className="toy-kind">{toy.kind}</span><h3>{toy.name}</h3><p>{toy.detail}</p><span className="toy-card-cta">Consultar disponibilidade <ArrowUpRight size={16}/></span></div>
           </a>;
         })}</div>
         <div className="section-bottom"><span><CheckCircle2/> Consulte disponibilidade para sua data</span><a className="button button-primary" href={whatsapp}>Pedir orçamento <ArrowUpRight size={17}/></a></div>
