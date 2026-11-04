@@ -726,3 +726,21 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     height: 58px;
   }
 }
+
+
+/* Botão flutuante compacto: círculo padrão, somente o ícone. */
+.whatsapp-float {
+  width: 52px !important;
+  min-width: 52px !important;
+  height: 52px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 50% !important;
+  display: grid !important;
+  place-items: center !important;
+}
+.whatsapp-float span { display: none !important; }
+.whatsapp-float svg { width: 25px !important; height: 25px !important; }
+@media (max-width: 560px) {
+  .whatsapp-float { width: 48px !important; min-width: 48px !important; height: 48px !important; }
+}
