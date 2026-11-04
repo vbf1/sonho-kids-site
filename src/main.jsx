@@ -29,7 +29,6 @@ const moments = [
 function Brand({ footer = false, logoUrl = '' }) {
   return <a className={`brand ${footer ? 'brand-footer' : ''}`} href="#inicio" aria-label="Sonho Kids Brinquedos - início">
     {logoUrl ? <img className="brand-logo" src={logoUrl} alt="Logo Sonho Kids"/> : <span className="brand-rainbow" aria-hidden="true">🌈</span>}
-    <span className="brand-name">sonho<span>kids</span><small>LOCAÇÃO DE BRINQUEDOS</small></span>
   </a>;
 }
 
