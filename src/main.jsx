@@ -174,6 +174,25 @@ function App() {
         <div className="instagram-note"><Instagram/><p>Quer ver mais fotos dos nossos eventos?</p><a href={instagram} target="_blank" rel="noreferrer">Acompanhe nosso Instagram <ArrowUpRight size={16}/></a></div>
       </section>
 
+      <section className="location-section" id="localizacao">
+        <div className="section-heading">
+          <div className="eyebrow">ONDE ESTAMOS</div>
+          <h2>Encontre a <span>Sonho Kids</span></h2>
+          <p>Estamos localizados na região do CEP 32210-161. Veja nossa localização no mapa.</p>
+        </div>
+        <div className="location-content">
+          <div className="location-map">
+            <iframe title="Localização da Sonho Kids no Google Maps" src="https://www.google.com/maps?q=CEP+32210-161&output=embed" loading="lazy" referrerPolicy="no-referrer-when-downgrade" allowFullScreen></iframe>
+          </div>
+          <div className="location-details">
+            <span className="location-pin">📍</span>
+            <h3>Sonho Kids Brinquedos</h3>
+            <p>CEP: 32210-161</p>
+            <a className="location-button" href="https://www.google.com/maps/search/?api=1&query=CEP+32210-161" target="_blank" rel="noreferrer">Abrir no Google Maps <ArrowUpRight size={17}/></a>
+          </div>
+        </div>
+      </section>
+
       <section className="contact-section" id="contato"><div className="contact-decoration">🎈</div><div><div className="eyebrow">{settingValue(content, 'contact_eyebrow')}</div><h2>{settingValue(content, 'contact_title')}</h2><p>{settingValue(content, 'contact_description')}</p></div></section>
     </main>
 
