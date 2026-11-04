@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /sonho-kids-site/
+Disallow: /sonho-kids-site/admin/
+
+Sitemap: https://vbf1.github.io/sonho-kids-site/sitemap.xml
