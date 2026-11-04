@@ -164,7 +164,7 @@ function App() {
       </section>
 
       <section className="about-section" id="sobre">
-        <div className="about-art"><div className="rainbow-arc arc-1"/><div className="rainbow-arc arc-2"/><div className="rainbow-arc arc-3"/><div className="about-center">🎠<strong>SONHO<br/>KIDS</strong><span>💛</span></div><span className="about-star star-left">✦</span><span className="about-star star-right">✿</span></div>
+        <div className="about-art about-logo-art">{logoUrl ? <img className="about-section-logo" src={logoUrl} alt="Logo oficial Sonho Kids Brinquedos"/> : <span className="about-logo-placeholder" aria-hidden="true"/>}</div>
         <div className="about-copy"><div className="eyebrow">{settingValue(content, 'about_eyebrow')}</div><h2>{settingValue(content, 'about_title')}</h2><p>{settingValue(content, 'about_description')}</p><div className="about-values"><div><span className="value-icon value-yellow"><Heart/></span><b>Carinho em cada atendimento</b></div><div><span className="value-icon value-blue"><ShieldCheck/></span><b>Atenção e cuidado</b></div><div><span className="value-icon value-pink"><PartyPopper/></span><b>Diversão para celebrar</b></div></div></div>
       </section>
 
