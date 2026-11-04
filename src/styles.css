@@ -377,3 +377,188 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     width: 13px;
   }
 }
+
+
+/* Vitrine renovada dos brinquedos: fotos em destaque e cards editoriais */
+.toys-section .section-heading { margin-bottom: 48px; }
+.toy-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 26px;
+}
+.toy-card {
+  border: 1px solid #eeebf4;
+  border-radius: 26px;
+  background: #fff;
+  box-shadow: 0 14px 42px rgba(38, 35, 76, .075);
+  overflow: hidden;
+  transform: translateY(0);
+}
+.toy-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 24px 54px rgba(38, 35, 76, .13);
+}
+.toy-art {
+  height: clamp(250px, 27vw, 330px);
+  overflow: hidden;
+  isolation: isolate;
+  background: #f4efff;
+}
+.toy-art::before { width: 260px; height: 260px; right: -70px; top: -125px; background: rgba(255,255,255,.22); z-index: 2; }
+.toy-art::after {
+  inset: 38% 0 0;
+  width: auto;
+  height: auto;
+  border-radius: 0;
+  background: linear-gradient(180deg, transparent 0%, rgba(28, 25, 55, .42) 100%);
+  z-index: 2;
+  pointer-events: none;
+}
+.toy-art .real-site-photo {
+  object-fit: cover;
+  object-position: center;
+  transition: transform .55s cubic-bezier(.2,.7,.2,1);
+}
+.toy-card:hover .toy-art .real-site-photo { transform: scale(1.055); }
+.toy-number {
+  top: 18px;
+  left: 18px;
+  z-index: 4;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(255,255,255,.55);
+  border-radius: 50%;
+  background: rgba(255,255,255,.88);
+  color: #302d54;
+  font-size: 11px;
+  font-weight: 900;
+  box-shadow: 0 5px 18px rgba(30,25,60,.12);
+}
+.toy-art-caption {
+  position: absolute;
+  z-index: 4;
+  left: 22px;
+  bottom: 19px;
+  color: #fff;
+  font-size: 10px;
+  line-height: 1.2;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-shadow: 0 2px 8px rgba(0,0,0,.25);
+}
+.toy-spark { display: none; }
+.toy-placeholder {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+.toy-placeholder::before, .toy-placeholder::after {
+  content: '';
+  position: absolute;
+  width: 230px;
+  height: 230px;
+  border: 1px solid rgba(255,255,255,.5);
+  border-radius: 50%;
+}
+.toy-placeholder::after { width: 170px; height: 170px; }
+.toy-placeholder-glow {
+  position: absolute;
+  width: 190px;
+  height: 190px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.48);
+  filter: blur(2px);
+}
+.toy-emoji {
+  position: relative;
+  z-index: 1;
+  font-size: clamp(88px, 10vw, 122px);
+  filter: drop-shadow(0 16px 12px rgba(44,35,75,.18));
+  transition: transform .35s ease;
+}
+.toy-card:hover .toy-emoji { transform: translateY(-5px) scale(1.06); }
+.toy-placeholder small {
+  position: absolute;
+  z-index: 1;
+  bottom: 20px;
+  color: rgba(55,48,83,.62);
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 1.8px;
+}
+.toy-info {
+  min-height: 190px;
+  padding: 24px 26px 25px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.toy-kind {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 5px 10px;
+  margin-bottom: 10px;
+  border-radius: 999px;
+  background: #f3effc;
+  color: #7559bd;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 1.2px;
+}
+.toy-info h3 {
+  min-height: 0;
+  margin: 0 0 7px;
+  color: #292747;
+  font: 800 clamp(22px, 2.4vw, 27px)/1.15 'Baloo 2', sans-serif;
+  letter-spacing: -.45px;
+}
+.toy-info p {
+  flex: 1 1 auto;
+  margin: 0 0 22px;
+  color: #77778b;
+  font-size: 13px;
+  line-height: 1.65;
+}
+.toy-info .toy-card-cta {
+  width: 100%;
+  min-height: 46px;
+  justify-content: space-between;
+  padding: 0 16px;
+  border-radius: 13px;
+  background: #f5f1ff;
+  color: #6e50bf;
+  font-size: 12px;
+  transition: background .2s, color .2s, transform .2s;
+}
+.toy-card:hover .toy-card-cta {
+  background: #7253c8;
+  color: #fff;
+}
+.pink .toy-art { background: linear-gradient(135deg,#f9c5dc,#f4e7ff); }
+.blue .toy-art { background: linear-gradient(135deg,#bfe5fa,#e3e2ff); }
+.yellow .toy-art { background: linear-gradient(135deg,#ffe29b,#fff0d2); }
+.purple .toy-art { background: linear-gradient(135deg,#d8c9ff,#f7d9ef); }
+@media (max-width: 760px) {
+  .toy-grid { grid-template-columns: repeat(2, minmax(0,1fr)); gap: 16px; }
+  .toy-art { height: 220px; }
+  .toy-info { min-height: 190px; padding: 20px 18px; }
+  .toy-info h3 { font-size: 21px; }
+  .toy-info p { font-size: 12px; }
+}
+@media (max-width: 560px) {
+  .toys-section .section-heading { margin-bottom: 30px; }
+  .toy-grid { grid-template-columns: minmax(0,1fr); gap: 18px; }
+  .toy-card { display: flex; flex-direction: column; border-radius: 23px; }
+  .toy-art { height: 228px; min-height: 0; width: 100%; }
+  .toy-info { min-height: 0; width: 100%; padding: 20px 20px 21px; }
+  .toy-info h3 { font-size: 23px; }
+  .toy-info p { font-size: 13px; margin-bottom: 18px; }
+  .toy-info .toy-card-cta { min-height: 45px; font-size: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .toy-card, .toy-art .real-site-photo, .toy-emoji, .toy-card-cta { transition: none; }
+}
