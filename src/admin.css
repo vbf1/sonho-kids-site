@@ -406,3 +406,15 @@
 .site-setting-field input { min-height: 43px; }
 .site-setting-field input:focus, .site-setting-field textarea:focus { outline: 2px solid #c9b9f0; border-color: #8c72cb; }
 @media (max-width: 520px) { .site-settings-grid { grid-template-columns: minmax(0, 1fr); } .site-setting-field.wide { grid-column: auto; } }
+
+
+/* A mesma logo cadastrada no site público também identifica o painel. */
+.admin-mark { display: flex; justify-content: center; align-items: center; min-height: 92px; margin-bottom: 8px; }
+.admin-mark img { display: block; width: min(100%, 190px); height: 92px; object-fit: contain; }
+.admin-mark span { color: #7253c8; font: 900 28px/1 'Baloo 2'; }
+.admin-top-brand { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; }
+.admin-top-brand img { display: block; width: 128px; height: 48px; object-fit: contain; }
+.admin-top-brand span { margin-top: 0 !important; font-size: 11px; color: #85849a; }
+@media (max-width: 520px) {
+  .admin-top-brand img { width: 100px; height: 42px; }
+}
