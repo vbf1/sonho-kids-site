@@ -108,7 +108,7 @@ function App() {
         {productImages.length ? <div className="product-gallery">{productImages.map((photo, index) => <button className="product-gallery-item" type="button" key={photo.id || photo.path} onClick={() => setPreviewPhoto({ src: mediaUrl(photo.path), title: photo.title || `${selectedToy.name} — foto ${index + 1}` })} aria-label={`Ampliar foto ${index + 1} de ${selectedToy.name}`}><img src={mediaUrl(photo.path)} alt={photo.title || `${selectedToy.name} — foto ${index + 1}`} loading="lazy" decoding="async"/><span>Ampliar <ArrowUpRight size={15}/></span></button>)}</div> : <div className="product-gallery-empty"><span>{selectedToy.emoji}</span><h2>Fotos em breve</h2><p>Estamos preparando mais imagens deste produto. Volte em breve para conferir!</p></div>}
       </main>
       <footer className="site-footer product-page-footer"><Brand footer logoUrl={logoReady ? logoUrl : ''} loading={!logoReady}/><p>{settingValue(content, 'footer_text')}</p><div className="footer-social"><a href={instagram} aria-label="Instagram" target="_blank" rel="noreferrer"><Instagram/></a></div><small>© {new Date().getFullYear()} Sonho Kids Brinquedos. Todos os direitos reservados.</small></footer>
-    {previewPhoto && <div className="photo-lightbox" role="dialog" aria-modal="true" aria-label={previewPhoto.title} onClick={() => setPreviewPhoto(null)}><button className="photo-lightbox-close" type="button" aria-label="Fechar foto" onClick={() => setPreviewPhoto(null)}>×</button><img src={previewPhoto.src} alt={previewPhoto.title} onClick={(event) => event.stopPropagation()}/><span>{previewPhoto.title}</span></div>}
+    {previewPhoto && <div className="photo-lightbox" role="dialog" aria-modal="true" aria-label={previewPhoto.title} onClick={() => setPreviewPhoto(null)}><button className="photo-lightbox-close" type="button" aria-label="Fechar foto" onClick={() => setPreviewPhoto(null)}>×</button><img src={previewPhoto.src} alt={previewPhoto.title} onClick={(event) => event.stopPropagation()}/></div>}
       <a className="whatsapp-float" href={whatsapp} aria-label="Fale conosco pelo WhatsApp" target="_blank" rel="noreferrer"><WhatsAppIcon size={27}/></a>
       {showScrollTop && <button className="scroll-top-float" type="button" aria-label="Voltar ao topo" title="Voltar ao topo" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}><ArrowUp size={23}/></button>}
     </div>;
@@ -181,7 +181,6 @@ function App() {
     {previewPhoto && <div className="photo-lightbox" role="dialog" aria-modal="true" aria-label={previewPhoto.title} onClick={() => setPreviewPhoto(null)}>
       <button className="photo-lightbox-close" type="button" aria-label="Fechar foto" onClick={() => setPreviewPhoto(null)}>×</button>
       <img src={previewPhoto.src} alt={previewPhoto.title} onClick={(event) => event.stopPropagation()}/>
-      <span>{previewPhoto.title}</span>
     </div>}
     <a className="whatsapp-float" href={whatsapp} aria-label="Fale conosco pelo WhatsApp" target="_blank" rel="noreferrer"><WhatsAppIcon size={24}/></a>
     {showScrollTop && <button className="scroll-top-float" type="button" aria-label="Voltar ao topo" title="Voltar ao topo" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}><ArrowUp size={23}/></button>}
