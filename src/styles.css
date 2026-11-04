@@ -689,3 +689,40 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     height: 52px;
   }
 }
+
+
+/* Reserva o espaço da marca até a configuração do Supabase terminar,
+   evitando mostrar a identidade antiga/fallback durante a atualização. */
+.brand-logo-loading {
+  display: block;
+  width: 250px;
+  height: 78px;
+  flex: 0 0 auto;
+}
+@media (max-width: 650px) {
+  .brand-logo-loading { width: 185px; height: 66px; }
+}
+@media (max-width: 380px) {
+  .brand-logo-loading { width: 150px; height: 58px; }
+}
+
+/* Pequeno aumento adicional da logo principal, sem alterar o rodapé. */
+.site-header .brand-logo,
+.product-page-header .brand-logo {
+  max-width: 250px;
+  height: 78px;
+}
+@media (max-width: 650px) {
+  .site-header .brand-logo,
+  .product-page-header .brand-logo {
+    max-width: 185px;
+    height: 66px;
+  }
+}
+@media (max-width: 380px) {
+  .site-header .brand-logo,
+  .product-page-header .brand-logo {
+    max-width: 150px;
+    height: 58px;
+  }
+}
