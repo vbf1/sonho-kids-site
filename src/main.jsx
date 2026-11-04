@@ -9,7 +9,6 @@ const defaultContent = {
   "whatsapp_phone": "5531999857343",
   "whatsapp_message": "Olá! Tenho interesse nos produtos da Sonho Kids Brinquedos. Gostaria de receber informações e fazer um orçamento para meu evento.",
   "instagram_url": "https://www.instagram.com/sonhokidsbrinquedos/",
-  "announcement_text": "Sua festa merece momentos incríveis",
   "hero_eyebrow": "ALEGRIA QUE VIRA MEMÓRIA",
   "hero_title": "Uma festa cheia de cor, sorrisos e diversão!",
   "hero_description": "Brinquedos e máquinas para deixar sua comemoração ainda mais especial. A Sonho Kids leva a diversão até você!",
@@ -114,7 +113,6 @@ function App() {
     </div>;
   }
   return <>
-    <div className="announcement"><Sparkles size={14}/> {settingValue(content, 'announcement_text')}</div>
     <header className="site-header">
       <Brand logoUrl={logoReady ? logoUrl : ''} loading={!logoReady} />
       <nav id="site-navigation" className={mobileMenuOpen ? 'is-open' : ''} aria-label="Navegação principal">
