@@ -32,7 +32,7 @@ function App() {
   const [images, setImages] = useState([]);
   const [logoUrl, setLogoUrl] = useState('');
   useEffect(() => {
-    if (window.location.pathname.replace(/\\/+$/, '').endsWith('/admin') || window.location.hash === '#/admin') return;
+    if (window.location.pathname.replace(/\/+$/, '').endsWith('/admin') || window.location.hash === '#/admin') return;
     let active = true;
     Promise.all([
       supabase.from('site_images').select('*').order('sort_order').order('created_at', { ascending: false }),
@@ -44,7 +44,7 @@ function App() {
     }).catch((e) => console.error('Não foi possível carregar as imagens do site:', e));
     return () => { active = false; };
   }, []);
-  if (window.location.pathname.replace(/\\/+$/, '').endsWith('/admin') || window.location.hash === '#/admin') return <Admin />;
+  if (window.location.pathname.replace(/\/+$/, '').endsWith('/admin') || window.location.hash === '#/admin') return <Admin />;
   const eventImages = images.filter((image) => image.category === 'eventos');
   return <>
     <div className="announcement"><Sparkles size={14}/> Sua festa merece momentos incríveis <span>•</span> Atendimento pelo WhatsApp</div>
