@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { Instagram, ArrowUp, ArrowUpRight, ShieldCheck, Sparkles, PartyPopper, Heart, CheckCircle2, Menu, X } from 'lucide-react';
+import { Instagram, ArrowUp, ArrowUpRight, ShieldCheck, PartyPopper, Heart, CheckCircle2, Menu, X } from 'lucide-react';
 import './styles.css';
 import Admin from './Admin';
 import { supabase, mediaUrl } from './supabaseClient';
