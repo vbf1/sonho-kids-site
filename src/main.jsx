@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { Instagram, ArrowUpRight, ShieldCheck, Sparkles, PartyPopper, Heart, Star, CheckCircle2 } from 'lucide-react';
+import { Instagram, ArrowUpRight, ShieldCheck, Sparkles, PartyPopper, Heart, CheckCircle2, Menu, X } from 'lucide-react';
 import './styles.css';
 import Admin from './Admin';
 import { supabase, mediaUrl } from './supabaseClient';
@@ -38,6 +38,7 @@ function App() {
   const [logoUrl, setLogoUrl] = useState('');
   const [logoReady, setLogoReady] = useState(false);
   const [previewPhoto, setPreviewPhoto] = useState(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   useEffect(() => {
     if (window.location.pathname.replace(/\/+$/, '').endsWith('/admin') || window.location.hash === '#/admin') return;
     let active = true;
@@ -48,19 +49,27 @@ function App() {
       if (!active) return;
       if (!imageResult.error) setImages(imageResult.data || []);
       if (!settingResult.error && settingResult.data?.value) setLogoUrl(mediaUrl(settingResult.data.value));
-    }).catch((e) => console.error('Não foi possível carregar as imagens do site:', e));
+    }).catch((e) => console.error('Não foi possível carregar as imagens do site:', e)).finally(() => {
+      if (active) setLogoReady(true);
+    });
     return () => { active = false; };
   }, []);
   if (window.location.pathname.replace(/\/+$/, '').endsWith('/admin') || window.location.hash === '#/admin') return <Admin />;
   const eventImages = images.filter((image) => image.category === 'eventos');
+  const galleryItems = eventImages.length
+    ? eventImages.map((image) => ({ image, title: image.title || 'Evento Sonho Kids', text: 'Nossos brinquedos e máquinas em momentos especiais.' }))
+    : moments.map((moment) => ({ ...moment, image: null }));
   return <>
     <div className="announcement"><Sparkles size={14}/> Sua festa merece momentos incríveis <span>•</span> Atendimento pelo WhatsApp</div>
     <header className="site-header">
       <Brand logoUrl={logoReady ? logoUrl : ''} />
-      <nav aria-label="Navegação principal">
-        <a href="#brinquedos">Brinquedos</a><a href="#sobre">A Sonho Kids</a><a href="#eventos">Eventos</a>
+      <nav id="site-navigation" className={mobileMenuOpen ? 'is-open' : ''} aria-label="Navegação principal">
+        <a href="#brinquedos" onClick={() => setMobileMenuOpen(false)}>Brinquedos</a>
+        <a href="#sobre" onClick={() => setMobileMenuOpen(false)}>A Sonho Kids</a>
+        <a href="#eventos" onClick={() => setMobileMenuOpen(false)}>Eventos</a>
       </nav>
-      <a className="header-cta" href={whatsapp}>Faça seu orçamento <ArrowUpRight size={17}/></a>
+      <button className="mobile-menu-toggle" type="button" aria-label={mobileMenuOpen ? 'Fechar menu' : 'Abrir menu'} aria-expanded={mobileMenuOpen} aria-controls="site-navigation" onClick={() => setMobileMenuOpen((open) => !open)}>{mobileMenuOpen ? <X size={21}/> : <Menu size={21}/>}</button>
+      <a className="header-cta" href={whatsapp}><span>Faça seu orçamento</span> <ArrowUpRight size={17}/></a>
     </header>
 
     <main id="inicio">
@@ -107,7 +116,7 @@ function App() {
 
       <section className="events-section" id="eventos">
         <div className="section-heading"><div className="eyebrow">A ALEGRIA ACONTECE DE VERDADE</div><h2>Momentos especiais com a <span>Sonho Kids</span></h2><p>Veja mais registros dos nossos brinquedos e máquinas em ação nas comemorações.</p></div>
-        <div className="moments-grid">{moments.map((m,i)=>{const eventPhoto=eventImages[i];return <button type="button" className={`moment-card moment-${i+1}`} onClick={() => eventPhoto ? setPreviewPhoto({src:mediaUrl(eventPhoto.path),title:eventPhoto.title || m.title}) : window.open(instagram,'_blank','noopener,noreferrer')} key={m.title}><div className="moment-art">{eventPhoto ? <img className="real-site-photo" src={mediaUrl(eventPhoto.path)} alt={eventPhoto.title || m.title} loading="lazy" decoding="async"/> : <span>{m.emoji}</span>}<small>SONHO KIDS • EVENTOS</small></div><div className="moment-info"><h3>{eventPhoto?.title || m.title}</h3><p>{m.text}</p><span>{eventPhoto ? 'Ampliar foto' : 'Ver no Instagram'} <ArrowUpRight size={15}/></span></div></button>})}</div>
+        <div className="moments-grid">{galleryItems.map((item, i) => <button type="button" className={`moment-card moment-${(i % 3) + 1}`} onClick={() => item.image ? setPreviewPhoto({ src: mediaUrl(item.image.path), title: item.title }) : window.open(instagram, '_blank', 'noopener,noreferrer')} key={item.image?.id || item.title}><div className="moment-art">{item.image ? <img className="real-site-photo" src={mediaUrl(item.image.path)} alt={item.title} loading="lazy" decoding="async"/> : <span>{item.emoji}</span>}<small>SONHO KIDS • EVENTOS</small></div><div className="moment-info"><h3>{item.title}</h3><p>{item.text}</p><span>{item.image ? 'Ampliar foto' : 'Ver no Instagram'} <ArrowUpRight size={15}/></span></div></button>)}</div>
         <div className="instagram-note"><Instagram/><p>Quer ver mais fotos dos nossos eventos?</p><a href={instagram} target="_blank" rel="noreferrer">Acompanhe nosso Instagram <ArrowUpRight size={16}/></a></div>
       </section>
 
