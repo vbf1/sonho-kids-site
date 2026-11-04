@@ -112,7 +112,22 @@ function App() {
       {showScrollTop && <button className="scroll-top-float" type="button" aria-label="Voltar ao topo" title="Voltar ao topo" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}><ArrowUp size={23}/></button>}
     </div>;
   }
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Sonho Kids Brinquedos",
+    "url": "https://vbf1.github.io/sonho-kids-site/",
+    "description": "Locação de brinquedos para festas e eventos em Belo Horizonte e região: cama elástica, piscina de bolinhas, máquina de pipoca e máquina de algodão-doce.",
+    "telephone": "+5531999857343",
+    "sameAs": ["https://www.instagram.com/sonhokidsbrinquedos/"],
+    "areaServed": {
+      "@type": "Place",
+      "name": "Belo Horizonte e região, Minas Gerais"
+    },
+    "knowsAbout": ["Aluguel de cama elástica", "Locação de piscina de bolinhas", "Aluguel de máquina de pipoca", "Aluguel de máquina de algodão-doce", "Brinquedos para festas e eventos"]
+  };
   return <>
+    <script type="application/ld+json">{JSON.stringify(structuredData)}</script>
     <header className="site-header">
       <Brand logoUrl={logoReady ? logoUrl : ''} loading={!logoReady} />
       <nav id="site-navigation" className={mobileMenuOpen ? 'is-open' : ''} aria-label="Navegação principal">
@@ -170,6 +185,15 @@ function App() {
         <div className="section-heading"><div className="eyebrow">A ALEGRIA ACONTECE DE VERDADE</div><h2>Momentos especiais com a <span>Sonho Kids</span></h2><p>Veja mais registros dos nossos brinquedos e máquinas em ação nas comemorações.</p></div>
         <div className="moments-grid">{galleryItems.map((item, i) => <button type="button" className={`moment-card moment-${(i % 3) + 1}`} onClick={() => item.image ? setPreviewPhoto({ src: mediaUrl(item.image.path), title: item.title }) : window.open(instagram, '_blank', 'noopener,noreferrer')} key={item.image?.id || item.title}><div className="moment-art">{item.image ? <img className="real-site-photo" src={mediaUrl(item.image.path)} alt={item.title} loading="lazy" decoding="async"/> : <span>{item.emoji}</span>}<small>SONHO KIDS • EVENTOS</small></div><div className="moment-info"><h3>{item.title}</h3><p>{item.text}</p><span>{item.image ? 'Ampliar foto' : 'Ver no Instagram'} <ArrowUpRight size={15}/></span></div></button>)}</div>
         <div className="instagram-note"><Instagram/><p>Quer ver mais fotos dos nossos eventos?</p><a href={instagram} target="_blank" rel="noreferrer">Acompanhe nosso Instagram <ArrowUpRight size={16}/></a></div>
+      </section>
+
+      <section className="seo-intro-section" aria-labelledby="seo-intro-title">
+        <div className="seo-intro-content">
+          <div className="eyebrow">SONHO KIDS BRINQUEDOS</div>
+          <h2 id="seo-intro-title">Aluguel de brinquedos para festas em BH e região</h2>
+          <p>Vai comemorar um aniversário, reunir a família ou organizar um evento? A Sonho Kids Brinquedos oferece locação de cama elástica, piscina de bolinhas, máquina de pipoca e máquina de algodão-doce para deixar sua festa ainda mais divertida. Atendemos Belo Horizonte e região. Consulte a disponibilidade para sua data e solicite seu orçamento pelo WhatsApp.</p>
+          <a href={whatsapp} target="_blank" rel="noreferrer" className="seo-intro-link">Peça seu orçamento pelo WhatsApp <ArrowUpRight size={16}/></a>
+        </div>
       </section>
 
       <section className="location-section" id="localizacao">
