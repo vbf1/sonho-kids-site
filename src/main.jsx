@@ -173,21 +173,9 @@ function App() {
       </section>
 
       <section className="location-section" id="localizacao">
-        <div className="section-heading">
-          <div className="eyebrow">ONDE ESTAMOS</div>
-          <h2>Encontre a <span>Sonho Kids</span></h2>
-          <p>Estamos localizados na região do CEP 32210-161. Veja nossa localização no mapa.</p>
-        </div>
-        <div className="location-content">
-          <div className="location-map">
-            <iframe title="Localização da Sonho Kids no Google Maps" src="https://www.google.com/maps?q=CEP+32210-161&output=embed" loading="lazy" referrerPolicy="no-referrer-when-downgrade" allowFullScreen></iframe>
-          </div>
-          <div className="location-details">
-            <span className="location-pin">📍</span>
-            <h3>Sonho Kids Brinquedos</h3>
-            <p>CEP: 32210-161</p>
-            <a className="location-button" href="https://www.google.com/maps/search/?api=1&query=CEP+32210-161" target="_blank" rel="noreferrer">Abrir no Google Maps <ArrowUpRight size={17}/></a>
-          </div>
+        <div className="location-heading">
+          <h2>Sonho Kids Brinquedos</h2>
+          <p>Atendemos BH e região</p>
         </div>
       </section>
 
