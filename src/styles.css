@@ -802,3 +802,8 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 .about-logo-art { display: flex; align-items: center; justify-content: center; }
 .about-section-logo { display: block; width: min(100%, 340px); max-height: 245px; height: auto; object-fit: contain; object-position: center; }
 .about-logo-placeholder { display: block; width: min(100%, 300px); height: 180px; border-radius: 18px; background: rgba(255,255,255,.07); }
+
+
+/* Seção Sobre sem logo/ilustração lateral: conteúdo ocupa a largura disponível. */
+.about-section { grid-template-columns: minmax(0, 1fr); }
+.about-copy { width: 100%; max-width: 850px; margin: 0 auto; }
