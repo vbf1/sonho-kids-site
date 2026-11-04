@@ -431,3 +431,58 @@
   .hero-image-current { width: 100%; height: 180px; flex: 1 1 100%; }
   .hero-image-controls { width: 100%; }
 }
+
+
+/* Login ocupa a altura visível do aparelho sem rolagem. */
+.admin-login-page {
+  height: 100vh;
+  height: 100svh;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(10px, 2vh, 20px);
+}
+.admin-login-page .admin-login {
+  width: min(100%, 430px);
+  margin: 0 auto;
+  padding: clamp(16px, 3vh, 28px);
+  flex: 0 0 auto;
+}
+.admin-login-page .admin-mark {
+  min-height: clamp(58px, 10vh, 82px);
+  margin-bottom: 4px;
+}
+.admin-login-page .admin-mark img { height: clamp(58px, 10vh, 82px); }
+.admin-login-page .admin-login h1 { margin: 5px 0; }
+.admin-login-page .admin-login > p { margin-bottom: clamp(12px, 2vh, 20px); line-height: 1.45; }
+.admin-login-page .admin-login form { gap: 6px; }
+.admin-login-page .admin-login form label { margin-top: 4px; }
+.admin-login-page .admin-login form input { min-height: 42px; padding: 10px 13px; }
+.admin-login-page .admin-login form .admin-primary { min-height: 44px; margin-top: 8px; }
+.admin-login-page .admin-switch { margin-top: 8px; padding: 6px 10px; }
+.admin-login-page .admin-login > small { margin-top: 10px; line-height: 1.35; }
+@media (max-height: 680px) {
+  .admin-login-page { padding: 8px 12px; }
+  .admin-login-page .admin-login { padding: 12px 20px; }
+  .admin-login-page .admin-mark,
+  .admin-login-page .admin-mark img { min-height: 48px; height: 48px; }
+  .admin-login-page .admin-login h1 { font-size: 27px; }
+  .admin-login-page .admin-login > p { margin-bottom: 8px; font-size: 12px; }
+  .admin-login-page .admin-login form input { min-height: 38px; }
+  .admin-login-page .admin-login form .admin-primary { min-height: 40px; }
+  .admin-login-page .admin-login > small { margin-top: 6px; font-size: 9px; }
+}
+@media (max-height: 560px) {
+  .admin-login-page .admin-login { padding: 9px 18px; }
+  .admin-login-page .admin-mark,
+  .admin-login-page .admin-mark img { min-height: 38px; height: 38px; }
+  .admin-login-page .admin-kicker { font-size: 9px; margin-top: 3px; }
+  .admin-login-page .admin-login h1 { font-size: 24px; }
+  .admin-login-page .admin-login > p { margin-bottom: 5px; }
+  .admin-login-page .admin-login form { gap: 3px; }
+  .admin-login-page .admin-login form label { margin-top: 2px; }
+  .admin-login-page .admin-switch { margin-top: 4px; }
+  .admin-login-page .admin-login > small { margin-top: 3px; }
+}
