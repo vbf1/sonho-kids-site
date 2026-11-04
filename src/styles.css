@@ -261,3 +261,119 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   .photo-lightbox { padding-inline:12px; }
   .photo-lightbox img { max-width:100%; max-height:calc(100vh - 135px); }
 }
+
+
+/* Correções de interface e comportamento identificadas na revisão */
+.site-header {
+  position: relative;
+  z-index: 30;
+}
+.mobile-menu-toggle {
+  display: none;
+  width: 40px;
+  height: 40px;
+  flex: 0 0 40px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #ece8f5;
+  border-radius: 12px;
+  background: #fff;
+  color: var(--navy);
+  cursor: pointer;
+}
+.toy-card-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 6px;
+  min-height: 26px;
+  margin-top: auto;
+  color: #7457c7;
+  font-size: 12px;
+  line-height: 1.4;
+  font-weight: 900;
+}
+.moment-card {
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+}
+.moment-card:focus-visible,
+.mobile-menu-toggle:focus-visible {
+  outline: 3px solid #f2b83e;
+  outline-offset: 3px;
+}
+@media (max-width: 650px) {
+  .site-header {
+    gap: 10px;
+  }
+  .mobile-menu-toggle {
+    display: inline-flex;
+    margin-left: auto;
+  }
+  .site-header nav {
+    display: none;
+  }
+  .site-header nav.is-open {
+    position: absolute;
+    display: flex;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding: 8px 18px 14px;
+    border: 1px solid #eeeaf5;
+    border-top: 0;
+    border-radius: 0 0 18px 18px;
+    background: #fff;
+    box-shadow: 0 16px 28px #29284d18;
+  }
+  .site-header nav.is-open a {
+    display: block;
+    padding: 13px 8px;
+    border-bottom: 1px solid #f1eef7;
+    font-size: 14px;
+  }
+  .site-header nav.is-open a:last-child {
+    border-bottom: 0;
+  }
+  .header-cta {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+  .toy-card-cta {
+    font-size: 10px;
+  }
+}
+@media (max-width: 380px) {
+  .site-header {
+    padding-inline: 12px;
+    gap: 7px;
+  }
+  .brand-logo {
+    max-width: 94px;
+    height: 42px;
+  }
+  .mobile-menu-toggle {
+    width: 36px;
+    height: 36px;
+    flex-basis: 36px;
+  }
+  .header-cta {
+    gap: 4px;
+    padding: 9px 8px;
+    font-size: 9px;
+  }
+  .header-cta svg {
+    width: 13px;
+  }
+}
