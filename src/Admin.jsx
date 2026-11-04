@@ -9,7 +9,8 @@ const categories = [
   ['piscina-bolinhas', 'Piscina de bolinhas'],
   ['maquina-pipoca', 'Máquina de pipoca'],
   ['algodao-doce', 'Máquina de algodão-doce'],
-  ['eventos', 'Fotos de eventos']
+  ['eventos', 'Fotos de eventos'],
+  ['hero', 'Foto principal da primeira seção']
 ];
 const labelFor = (key) => categories.find(([value]) => value === key)?.[1] || key;
 
