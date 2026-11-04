@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { Instagram, ArrowUpRight, ShieldCheck, Sparkles, PartyPopper, Heart, CheckCircle2, Menu, X } from 'lucide-react';
+import { Instagram, ArrowUp, ArrowUpRight, ShieldCheck, Sparkles, PartyPopper, Heart, CheckCircle2, Menu, X } from 'lucide-react';
 import './styles.css';
 import Admin from './Admin';
 import { supabase, mediaUrl } from './supabaseClient';
@@ -62,6 +62,7 @@ function App() {
   const [logoReady, setLogoReady] = useState(false);
   const [previewPhoto, setPreviewPhoto] = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showScrollTop, setShowScrollTop] = useState(false);
   useEffect(() => {
     if (window.location.pathname.replace(/\/+$/, '').endsWith('/admin') || window.location.hash === '#/admin') return;
     let active = true;
@@ -80,6 +81,13 @@ function App() {
       if (active) setLogoReady(true);
     });
     return () => { active = false; };
+  }, []);
+  useEffect(() => {
+    if (window.location.pathname.replace(/\/+$/, '').endsWith('/admin') || window.location.hash === '#/admin') return;
+    const updateScrollState = () => setShowScrollTop(window.scrollY > 320);
+    updateScrollState();
+    window.addEventListener('scroll', updateScrollState, { passive: true });
+    return () => window.removeEventListener('scroll', updateScrollState);
   }, []);
   if (window.location.pathname.replace(/\/+$/, '').endsWith('/admin') || window.location.hash === '#/admin') return <Admin />;
   const configuredToys = toys.map((toy, index) => ({ ...toy, name: settingValue(content, `toy_${index + 1}_name`), detail: settingValue(content, `toy_${index + 1}_detail`) }));
@@ -102,6 +110,7 @@ function App() {
       <footer className="site-footer product-page-footer"><Brand footer logoUrl={logoReady ? logoUrl : ''} loading={!logoReady}/><p>{settingValue(content, 'footer_text')}</p><div className="footer-social"><a href={instagram} aria-label="Instagram" target="_blank" rel="noreferrer"><Instagram/></a></div><small>© {new Date().getFullYear()} Sonho Kids Brinquedos. Todos os direitos reservados.</small></footer>
     {previewPhoto && <div className="photo-lightbox" role="dialog" aria-modal="true" aria-label={previewPhoto.title} onClick={() => setPreviewPhoto(null)}><button className="photo-lightbox-close" type="button" aria-label="Fechar foto" onClick={() => setPreviewPhoto(null)}>×</button><img src={previewPhoto.src} alt={previewPhoto.title} onClick={(event) => event.stopPropagation()}/><span>{previewPhoto.title}</span></div>}
       <a className="whatsapp-float" href={whatsapp} aria-label="Fale conosco pelo WhatsApp" target="_blank" rel="noreferrer"><WhatsAppIcon size={27}/></a>
+      {showScrollTop && <button className="scroll-top-float" type="button" aria-label="Voltar ao topo" title="Voltar ao topo" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}><ArrowUp size={23}/></button>}
     </div>;
   }
   return <>
@@ -175,6 +184,7 @@ function App() {
       <span>{previewPhoto.title}</span>
     </div>}
     <a className="whatsapp-float" href={whatsapp} aria-label="Fale conosco pelo WhatsApp" target="_blank" rel="noreferrer"><WhatsAppIcon size={24}/></a>
+    {showScrollTop && <button className="scroll-top-float" type="button" aria-label="Voltar ao topo" title="Voltar ao topo" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}><ArrowUp size={23}/></button>}
   </>;
 }
 createRoot(document.getElementById('root')).render(<App/>);
