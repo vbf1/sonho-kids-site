@@ -55,6 +55,7 @@ function App() {
   }, []);
   if (window.location.pathname.replace(/\/+$/, '').endsWith('/admin') || window.location.hash === '#/admin') return <Admin />;
   const selectedToy = toys.find((toy) => toy.imageCategory === new URLSearchParams(window.location.search).get('produto'));
+  const heroImage = images.find((image) => image.category === 'hero');
   const eventImages = images.filter((image) => image.category === 'eventos');
   const galleryItems = eventImages.length
     ? eventImages.map((image) => ({ image, title: image.title || 'Evento Sonho Kids', text: 'Nossos brinquedos e máquinas em momentos especiais.' }))
@@ -68,7 +69,6 @@ function App() {
         {productImages.length ? <div className="product-gallery">{productImages.map((photo, index) => <button className="product-gallery-item" type="button" key={photo.id || photo.path} onClick={() => setPreviewPhoto({ src: mediaUrl(photo.path), title: photo.title || `${selectedToy.name} — foto ${index + 1}` })} aria-label={`Ampliar foto ${index + 1} de ${selectedToy.name}`}><img src={mediaUrl(photo.path)} alt={photo.title || `${selectedToy.name} — foto ${index + 1}`} loading="lazy" decoding="async"/><span>Ampliar <ArrowUpRight size={15}/></span></button>)}</div> : <div className="product-gallery-empty"><span>{selectedToy.emoji}</span><h2>Fotos em breve</h2><p>Estamos preparando mais imagens deste produto. Volte em breve para conferir!</p></div>}
       </main>
       <footer className="site-footer product-page-footer"><Brand footer logoUrl={logoReady ? logoUrl : ''}/><p>Levando diversão e criando memórias felizes. 💛</p><div className="footer-social"><a href={instagram} aria-label="Instagram" target="_blank" rel="noreferrer"><Instagram/></a></div><small>© {new Date().getFullYear()} Sonho Kids Brinquedos. Todos os direitos reservados.</small></footer>
-      <a className="whatsapp-float" href={whatsapp} aria-label="Fale conosco pelo WhatsApp" target="_blank" rel="noreferrer"><WhatsAppIcon size={27}/><span>Fale conosco</span></a>
     {previewPhoto && <div className="photo-lightbox" role="dialog" aria-modal="true" aria-label={previewPhoto.title} onClick={() => setPreviewPhoto(null)}><button className="photo-lightbox-close" type="button" aria-label="Fechar foto" onClick={() => setPreviewPhoto(null)}>×</button><img src={previewPhoto.src} alt={previewPhoto.title} onClick={(event) => event.stopPropagation()}/><span>{previewPhoto.title}</span></div>}
       <a className="whatsapp-float" href={whatsapp} aria-label="Fale conosco pelo WhatsApp" target="_blank" rel="noreferrer"><WhatsAppIcon size={27}/><span>Fale conosco</span></a>
     </div>;
@@ -96,14 +96,16 @@ function App() {
           </div>
           <div className="hero-points"><span><ShieldCheck/> Cuidado em cada detalhe</span><span><Heart/> Diversão com carinho</span></div>
         </div>
-        <div className="hero-visual" aria-label="Ilustração colorida de festa infantil">
-          <div className="hero-orbit orbit-one"/><div className="hero-orbit orbit-two"/>
-          <div className="hero-cloud cloud-one">☁️</div><div className="hero-cloud cloud-two">☁️</div>
-          <div className="hero-burst">✦</div>
-          <div className="hero-playground"><div className="castle-roof"/><div className="castle-body"><span>🎈</span><b>SONHO<br/>KIDS</b><span>🎉</span></div><div className="castle-base"/></div>
-          <div className="hero-sticker sticker-top">🌟 <b>Festa feliz</b></div>
-          <div className="hero-sticker sticker-bottom"><span>💛</span><b>Momentos<br/>inesquecíveis</b></div>
-          <span className="hero-confetti confetti-a">✿</span><span className="hero-confetti confetti-b">✦</span>
+        <div className={heroImage ? "hero-visual hero-visual-photo" : "hero-visual"} aria-label={heroImage ? "Foto principal da Sonho Kids" : "Ilustração colorida de festa infantil"}>
+          {heroImage ? <img className="hero-main-photo" src={mediaUrl(heroImage.path)} alt={heroImage.title || "Brinquedos Sonho Kids em uma festa"}/> : <>
+            <div className="hero-orbit orbit-one"/><div className="hero-orbit orbit-two"/>
+            <div className="hero-cloud cloud-one">☁️</div><div className="hero-cloud cloud-two">☁️</div>
+            <div className="hero-burst">✦</div>
+            <div className="hero-playground"><div className="castle-roof"/><div className="castle-body"><span>🎈</span><b>SONHO<br/>KIDS</b><span>🎉</span></div><div className="castle-base"/></div>
+            <div className="hero-sticker sticker-top">🌟 <b>Festa feliz</b></div>
+            <div className="hero-sticker sticker-bottom"><span>💛</span><b>Momentos<br/>inesquecíveis</b></div>
+            <span className="hero-confetti confetti-a">✿</span><span className="hero-confetti confetti-b">✦</span>
+          </>}
         </div>
       </section>
 
@@ -141,6 +143,7 @@ function App() {
       <img src={previewPhoto.src} alt={previewPhoto.title} onClick={(event) => event.stopPropagation()}/>
       <span>{previewPhoto.title}</span>
     </div>}
+    <a className="whatsapp-float" href={whatsapp} aria-label="Fale conosco pelo WhatsApp" target="_blank" rel="noreferrer"><WhatsAppIcon size={27}/><span>Fale conosco</span></a>
   </>;
 }
 createRoot(document.getElementById('root')).render(<App/>);
