@@ -382,3 +382,16 @@
     height: 92px;
   }
 }
+
+
+/* Exibe a foto inteira, sem esticar nem cortar partes importantes. */
+.real-site-photo {
+  object-fit: contain;
+  object-position: center;
+  background: rgba(255, 255, 255, 0.16);
+}
+.admin-image-card > img {
+  object-fit: contain;
+  object-position: center;
+  padding: 8px;
+}
