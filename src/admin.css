@@ -486,3 +486,26 @@
   .admin-login-page .admin-switch { margin-top: 4px; }
   .admin-login-page .admin-login > small { margin-top: 3px; }
 }
+
+
+/* Gerenciador do catálogo de brinquedos e máquinas */
+.catalog-add-row { display:grid; grid-template-columns:minmax(0,1fr) 150px auto; gap:10px; margin-bottom:18px; }
+.catalog-add-row input,.catalog-add-row select,.catalog-item-fields input,.catalog-item-fields select,.catalog-item-fields textarea {
+  width:100%; min-width:0; border:1px solid #e7e3ef; border-radius:10px; padding:11px 12px;
+  color:#3d3a59; background:#fff; font:600 13px/1.5 'Nunito';
+}
+.catalog-items-list { display:grid; gap:12px; margin-bottom:18px; }
+.catalog-item-editor { padding:15px; border:1px solid #eeeaf4; border-radius:13px; background:#fcfbff; }
+.catalog-item-top { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:12px; }
+.catalog-item-top strong { color:#7253c8; font-size:11px; letter-spacing:.7px; }
+.catalog-active-toggle { display:flex; align-items:center; gap:7px; color:#69677f; font-size:12px; font-weight:800; }
+.catalog-active-toggle input { width:17px; height:17px; accent-color:#7253c8; }
+.catalog-item-fields { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.5fr) 150px; gap:10px; }
+.catalog-item-fields label { display:grid; gap:6px; color:#69677f; font-size:11px; font-weight:900; }
+.catalog-item-fields textarea { resize:vertical; }
+.catalog-item-editor > small { display:block; margin-top:10px; color:#9694a7; font-size:10px; overflow-wrap:anywhere; }
+@media(max-width:700px) {
+ .catalog-add-row { grid-template-columns:minmax(0,1fr) 120px; }
+ .catalog-add-row .admin-primary { grid-column:1/-1; }
+ .catalog-item-fields { grid-template-columns:minmax(0,1fr); }
+}
