@@ -37,10 +37,10 @@ function WhatsAppIcon({ size = 20 }) {
   return <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M20.52 3.48A11.82 11.82 0 0 0 12.1 0C5.55 0 .22 5.33.22 11.88c0 2.1.55 4.15 1.6 5.96L.13 24l6.32-1.66a11.9 11.9 0 0 0 5.65 1.44h.01c6.55 0 11.88-5.33 11.88-11.88 0-3.17-1.23-6.15-3.47-8.42ZM12.1 21.76h-.01a9.9 9.9 0 0 1-5.04-1.38l-.36-.21-3.75.98 1-3.65-.24-.38a9.86 9.86 0 0 1-1.52-5.24c0-5.47 4.45-9.92 9.93-9.92a9.85 9.85 0 0 1 7.02 2.91 9.86 9.86 0 0 1 2.9 7.02c0 5.47-4.45 9.92-9.93 9.92Zm5.45-7.43c-.3-.15-1.77-.87-2.05-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.47-.89-.79-1.49-1.77-1.67-2.07-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.49s1.07 2.89 1.22 3.09c.15.2 2.1 3.2 5.09 4.49.71.31 1.27.5 1.7.64.72.23 1.37.2 1.88.12.58-.09 1.77-.72 2.02-1.42.25-.7.25-1.3.17-1.42-.07-.13-.27-.2-.57-.35Z"/></svg>;
 }
 const toys = [
-  { number: '01', name: 'Cama elástica', detail: 'Pulos, energia e muita diversão para a criançada.', emoji: '🤸', color: 'pink', imageCategory: 'cama-elastica', visualLabel: 'ENERGIA E MOVIMENTO', kind: 'BRINQUEDO' },
-  { number: '02', name: 'Piscina de bolinhas', detail: 'Um espaço colorido para brincar e se divertir.', emoji: '🟡', color: 'blue', imageCategory: 'piscina-bolinhas', visualLabel: 'UM MAR DE CORES', kind: 'BRINQUEDO' },
-  { number: '03', name: 'Máquina de pipoca', detail: 'O cheirinho e o sabor que combinam com festa.', emoji: '🍿', color: 'yellow', imageCategory: 'maquina-pipoca', visualLabel: 'SABOR DE FESTA', kind: 'MÁQUINA' },
-  { number: '04', name: 'Máquina de algodão-doce', detail: 'Um toque doce e especial para seu evento.', emoji: '🍭', color: 'purple', imageCategory: 'algodao-doce', visualLabel: 'UM TOQUE DE DOÇURA', kind: 'MÁQUINA' },
+  { name: 'Cama elástica', detail: 'Pulos, energia e muita diversão para a criançada.', emoji: '🤸', color: 'pink', imageCategory: 'cama-elastica', visualLabel: 'ENERGIA E MOVIMENTO', kind: 'BRINQUEDO' },
+  { name: 'Piscina de bolinhas', detail: 'Um espaço colorido para brincar e se divertir.', emoji: '🟡', color: 'blue', imageCategory: 'piscina-bolinhas', visualLabel: 'UM MAR DE CORES', kind: 'BRINQUEDO' },
+  { name: 'Máquina de pipoca', detail: 'O cheirinho e o sabor que combinam com festa.', emoji: '🍿', color: 'yellow', imageCategory: 'maquina-pipoca', visualLabel: 'SABOR DE FESTA', kind: 'MÁQUINA' },
+  { name: 'Máquina de algodão-doce', detail: 'Um toque doce e especial para seu evento.', emoji: '🍭', color: 'purple', imageCategory: 'algodao-doce', visualLabel: 'UM TOQUE DE DOÇURA', kind: 'MÁQUINA' },
 ];
 
 const moments = [
@@ -155,8 +155,8 @@ function App() {
         <div className="section-heading"><div className="eyebrow">NOSSO MUNDO DE DIVERSÃO</div><h2>Escolha a alegria da <span>sua festa</span></h2><p>Opções para transformar aniversários, encontros e comemorações em momentos especiais.</p></div>
         <div className="toy-grid">{configuredToys.map((toy) => {
           const toyImage = images.find((image) => image.category === toy.imageCategory);
-          return <a className={`toy-card ${toy.color}`} key={toy.number} href={`?produto=${encodeURIComponent(toy.imageCategory)}`} target="_blank" rel="noreferrer" aria-label={`Ver fotos de ${toy.name} em uma nova aba`}>
-            <div className="toy-art"><span className="toy-number">{toy.number}</span>{toyImage ? <img className="real-site-photo" src={mediaUrl(toyImage.path)} alt={toy.name} loading="lazy" decoding="async"/> : <div className="toy-placeholder"><span className="toy-placeholder-glow"/><span className="toy-emoji">{toy.emoji}</span><small>IMAGEM EM BREVE</small></div>}<span className="toy-art-caption">{toy.visualLabel}</span><span className="toy-spark">✦</span></div>
+          return <a className={`toy-card ${toy.color}`} key={toy.imageCategory} href={`?produto=${encodeURIComponent(toy.imageCategory)}`} target="_blank" rel="noreferrer" aria-label={`Ver fotos de ${toy.name} em uma nova aba`}>
+            <div className="toy-art">{toyImage ? <img className="real-site-photo" src={mediaUrl(toyImage.path)} alt={toy.name} loading="lazy" decoding="async"/> : <div className="toy-placeholder"><span className="toy-placeholder-glow"/><span className="toy-emoji">{toy.emoji}</span><small>IMAGEM EM BREVE</small></div>}<span className="toy-art-caption">{toy.visualLabel}</span><span className="toy-spark">✦</span></div>
             <div className="toy-info"><span className="toy-kind">{toy.kind}</span><h3>{toy.name}</h3><p>{toy.detail}</p><span className="toy-card-cta">Ver fotos do produto <ArrowUpRight size={16}/></span></div>
           </a>;
         })}</div>
