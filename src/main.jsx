@@ -49,9 +49,9 @@ const moments = [
   { emoji: '💛', title: 'Sorrisos de verdade', text: 'A alegria acontecendo em eventos reais.' },
 ];
 
-function Brand({ footer = false, logoUrl = '' }) {
+function Brand({ footer = false, logoUrl = '', loading = false }) {
   return <a className={`brand ${footer ? 'brand-footer' : ''}`} href="#inicio" aria-label="Sonho Kids Brinquedos - início">
-    {logoUrl ? <img className="brand-logo" src={logoUrl} alt="Logo Sonho Kids"/> : <span className="brand-rainbow" aria-hidden="true">🌈</span>}
+    {logoUrl ? <img className="brand-logo" src={logoUrl} alt="Logo Sonho Kids"/> : loading ? <span className="brand-logo-loading" aria-hidden="true"/> : <span className="brand-rainbow" aria-hidden="true">🌈</span>}
   </a>;
 }
 
@@ -94,12 +94,12 @@ function App() {
   if (selectedToy) {
     const productImages = images.filter((image) => image.category === selectedToy.imageCategory);
     return <div className="product-page">
-      <header className="product-page-header"><Brand logoUrl={logoReady ? logoUrl : ''}/><a className="product-back-link" href={window.location.pathname}>← Voltar aos brinquedos</a></header>
+      <header className="product-page-header"><Brand logoUrl={logoReady ? logoUrl : ''} loading={!logoReady}/><a className="product-back-link" href={window.location.pathname}>← Voltar aos brinquedos</a></header>
       <main className="product-page-main">
         <div className="product-page-heading"><span className="toy-kind">{selectedToy.kind}</span><h1>{selectedToy.name}</h1><p>{selectedToy.detail}</p><span className="product-photo-count">{productImages.length} {productImages.length === 1 ? 'foto disponível' : 'fotos disponíveis'}</span></div>
         {productImages.length ? <div className="product-gallery">{productImages.map((photo, index) => <button className="product-gallery-item" type="button" key={photo.id || photo.path} onClick={() => setPreviewPhoto({ src: mediaUrl(photo.path), title: photo.title || `${selectedToy.name} — foto ${index + 1}` })} aria-label={`Ampliar foto ${index + 1} de ${selectedToy.name}`}><img src={mediaUrl(photo.path)} alt={photo.title || `${selectedToy.name} — foto ${index + 1}`} loading="lazy" decoding="async"/><span>Ampliar <ArrowUpRight size={15}/></span></button>)}</div> : <div className="product-gallery-empty"><span>{selectedToy.emoji}</span><h2>Fotos em breve</h2><p>Estamos preparando mais imagens deste produto. Volte em breve para conferir!</p></div>}
       </main>
-      <footer className="site-footer product-page-footer"><Brand footer logoUrl={logoReady ? logoUrl : ''}/><p>{settingValue(content, 'footer_text')}</p><div className="footer-social"><a href={instagram} aria-label="Instagram" target="_blank" rel="noreferrer"><Instagram/></a></div><small>© {new Date().getFullYear()} Sonho Kids Brinquedos. Todos os direitos reservados.</small></footer>
+      <footer className="site-footer product-page-footer"><Brand footer logoUrl={logoReady ? logoUrl : ''} loading={!logoReady}/><p>{settingValue(content, 'footer_text')}</p><div className="footer-social"><a href={instagram} aria-label="Instagram" target="_blank" rel="noreferrer"><Instagram/></a></div><small>© {new Date().getFullYear()} Sonho Kids Brinquedos. Todos os direitos reservados.</small></footer>
     {previewPhoto && <div className="photo-lightbox" role="dialog" aria-modal="true" aria-label={previewPhoto.title} onClick={() => setPreviewPhoto(null)}><button className="photo-lightbox-close" type="button" aria-label="Fechar foto" onClick={() => setPreviewPhoto(null)}>×</button><img src={previewPhoto.src} alt={previewPhoto.title} onClick={(event) => event.stopPropagation()}/><span>{previewPhoto.title}</span></div>}
       <a className="whatsapp-float" href={whatsapp} aria-label="Fale conosco pelo WhatsApp" target="_blank" rel="noreferrer"><WhatsAppIcon size={27}/><span>Fale conosco</span></a>
     </div>;
@@ -168,7 +168,7 @@ function App() {
       <section className="contact-section" id="contato"><div className="contact-decoration">🎈</div><div><div className="eyebrow">{settingValue(content, 'contact_eyebrow')}</div><h2>{settingValue(content, 'contact_title')}</h2><p>{settingValue(content, 'contact_description')}</p></div></section>
     </main>
 
-    <footer className="site-footer"><Brand footer logoUrl={logoReady ? logoUrl : ''}/><p>{settingValue(content, 'footer_text')}</p><div className="footer-social"><a href={instagram} aria-label="Instagram" target="_blank" rel="noreferrer"><Instagram/></a></div><small>© {new Date().getFullYear()} Sonho Kids Brinquedos. Todos os direitos reservados.</small></footer>
+    <footer className="site-footer"><Brand footer logoUrl={logoReady ? logoUrl : ''} loading={!logoReady}/><p>{settingValue(content, 'footer_text')}</p><div className="footer-social"><a href={instagram} aria-label="Instagram" target="_blank" rel="noreferrer"><Instagram/></a></div><small>© {new Date().getFullYear()} Sonho Kids Brinquedos. Todos os direitos reservados.</small></footer>
     {previewPhoto && <div className="photo-lightbox" role="dialog" aria-modal="true" aria-label={previewPhoto.title} onClick={() => setPreviewPhoto(null)}>
       <button className="photo-lightbox-close" type="button" aria-label="Fechar foto" onClick={() => setPreviewPhoto(null)}>×</button>
       <img src={previewPhoto.src} alt={previewPhoto.title} onClick={(event) => event.stopPropagation()}/>
