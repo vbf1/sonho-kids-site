@@ -817,7 +817,3 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 @media (max-width: 700px) {
   .location-section { padding-inline: 18px; }
 }
-  .location-content { grid-template-columns: minmax(0, 1fr); gap: 16px; }
-  .location-map, .location-map iframe { min-height: 290px; }
-  .location-details { padding: 24px; }
-}
