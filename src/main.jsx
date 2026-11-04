@@ -107,7 +107,7 @@ function App() {
   return <>
     <div className="announcement"><Sparkles size={14}/> {settingValue(content, 'announcement_text')}</div>
     <header className="site-header">
-      <Brand logoUrl={logoReady ? logoUrl : ''} />
+      <Brand logoUrl={logoReady ? logoUrl : ''} loading={!logoReady} />
       <nav id="site-navigation" className={mobileMenuOpen ? 'is-open' : ''} aria-label="Navegação principal">
         <a href="#brinquedos" onClick={() => setMobileMenuOpen(false)}>Brinquedos</a>
         <a href="#sobre" onClick={() => setMobileMenuOpen(false)}>A Sonho Kids</a>
@@ -174,7 +174,7 @@ function App() {
       <img src={previewPhoto.src} alt={previewPhoto.title} onClick={(event) => event.stopPropagation()}/>
       <span>{previewPhoto.title}</span>
     </div>}
-    <a className="whatsapp-float" href={whatsapp} aria-label="Fale conosco pelo WhatsApp" target="_blank" rel="noreferrer"><WhatsAppIcon size={27}/><span>Fale conosco</span></a>
+    <a className="whatsapp-float" href={whatsapp} aria-label="Fale conosco pelo WhatsApp" target="_blank" rel="noreferrer"><WhatsAppIcon size={24}/></a>
   </>;
 }
 createRoot(document.getElementById('root')).render(<App/>);
