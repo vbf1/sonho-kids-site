@@ -883,3 +883,8 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   .catalog-teaser-card { border-radius: 19px; }
   .catalog-page-main { padding-inline: 14px; }
 }
+
+
+/* Fotos de eventos são apenas demonstrativas, sem interação ou legendas. */
+.moments-grid .moment-card { cursor: default; }
+.moments-grid .moment-card:hover { transform: none; }
