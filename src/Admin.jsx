@@ -98,7 +98,6 @@ export default function Admin() {
   const [checking, setChecking] = useState(true);
   const [email, setEmail] = useState(OWNER);
   const [password, setPassword] = useState('');
-  const [authMode, setAuthMode] = useState('login');
   const [notice, setNotice] = useState('');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
@@ -163,16 +162,13 @@ export default function Admin() {
       setError('Este painel é restrito ao e-mail autorizado.'); setBusy(false); return;
     }
     try {
-      if (authMode === 'signup') {
-        const { data, error: authError } = await supabase.auth.signUp({ email: OWNER, password, options: { emailRedirectTo: window.location.origin + window.location.pathname } });
-        if (authError) throw authError;
-        if (data.session) setSession(data.session);
-        else setNotice('Cadastro iniciado. Confira sua caixa de entrada para confirmar o e-mail e depois entre no painel.');
-      } else {
-        const { data, error: authError } = await supabase.auth.signInWithPassword({ email: OWNER, password });
-        if (authError) throw authError;
-        setSession(data.session);
+      const { data, error: authError } = await supabase.auth.signInWithPassword({ email: OWNER, password });
+      if (authError) throw authError;
+      if (data.session?.user?.email?.toLowerCase() !== OWNER) {
+        await supabase.auth.signOut();
+        throw new Error('Esta conta não está autorizada a acessar o painel.');
       }
+      setSession(data.session);
     } catch (e) { setError(e.message || 'Não foi possível autenticar.'); }
     finally { setBusy(false); }
   };
@@ -283,7 +279,7 @@ export default function Admin() {
   const logout = async () => { await supabase.auth.signOut(); setSession(null); };
 
   if (checking) return <div className="admin-loading"><LoaderCircle className="spin"/> Preparando painel...</div>;
-  if (!session) return <main className="admin-page admin-login-page"><section className="admin-login"><div className="admin-mark">{logoPreview ? <img src={logoPreview} alt="Logo Sonho Kids Brinquedos"/> : <span>SONHO KIDS</span>}</div><span className="admin-kicker">SONHO KIDS BRINQUEDOS</span><h1>Área administrativa</h1><p>Entre para atualizar as fotos, os brinquedos e a identidade visual do site.</p><form onSubmit={authenticate}><label>E-mail autorizado</label><input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required/><label>Senha</label><input type="password" value={password} onChange={(e) => setPassword(e.target.value)} minLength="8" required placeholder="Mínimo de 8 caracteres"/><button className="admin-primary" disabled={busy}>{busy ? 'Aguarde...' : authMode === 'login' ? 'Entrar no painel' : 'Criar meu acesso'}</button></form><button className="admin-switch" onClick={() => {setAuthMode(authMode === 'login' ? 'signup' : 'login');setError('');setNotice('');}}>{authMode === 'login' ? 'Primeiro acesso? Criar senha' : 'Já tem acesso? Entrar'}</button>{error && <div className="admin-alert error"><AlertCircle size={16}/>{error}</div>}{notice && <div className="admin-alert success"><CheckCircle2 size={16}/>{notice}</div>}<small>Somente a conta {OWNER} tem permissão para alterar o conteúdo.</small></section></main>;
+  if (!session) return <main className="admin-page admin-login-page"><section className="admin-login"><div className="admin-mark">{logoPreview ? <img src={logoPreview} alt="Logo Sonho Kids Brinquedos"/> : <span>SONHO KIDS</span>}</div><span className="admin-kicker">SONHO KIDS BRINQUEDOS</span><h1>Área administrativa</h1><p>Entre para atualizar as fotos, os brinquedos e a identidade visual do site.</p><form onSubmit={authenticate}><label>E-mail autorizado</label><input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required/><label>Senha</label><input type="password" value={password} onChange={(e) => setPassword(e.target.value)} minLength="8" required placeholder="Mínimo de 8 caracteres"/><button className="admin-primary" disabled={busy}>{busy ? 'Aguarde...' : 'Entrar no painel'}</button></form>{error && <div className="admin-alert error"><AlertCircle size={16}/>{error}</div>}{notice && <div className="admin-alert success"><CheckCircle2 size={16}/>{notice}</div>}<small>Acesso exclusivo à conta administrativa já cadastrada.</small></section></main>;
 
   return <main className="admin-page"><header className="admin-top"><a className="admin-back" href="../"><ExternalLink size={17}/> Ir para o site</a><div className="admin-top-brand">{logoPreview ? <img src={logoPreview} alt="Logo Sonho Kids Brinquedos"/> : <b>Sonho Kids</b>}<span>Painel de conteúdo</span></div><button className="admin-logout" onClick={logout}><LogOut size={16}/> Sair</button></header><div className="admin-content"><div className="admin-heading"><span className="admin-kicker">GERENCIAMENTO DO SITE</span><h1>Olá! Vamos atualizar sua vitrine?</h1><p>As alterações salvas aqui aparecem no site público, inclusive no celular dos visitantes.</p></div>{error && <div className="admin-alert error"><AlertCircle size={16}/>{error}</div>}{notice && <div className="admin-alert success"><CheckCircle2 size={16}/>{notice}</div>}
 
