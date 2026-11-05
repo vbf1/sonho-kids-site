@@ -1320,3 +1320,46 @@
   padding: 0;
   background: transparent;
 }
+
+
+/* Cards de fotos: preservar a proporção real do arquivo, sem esticar ou cortar */
+.admin-image-grid {
+  align-items: start !important;
+  grid-auto-rows: auto;
+}
+.admin-image-card {
+  height: auto !important;
+  min-height: 0;
+  align-self: start;
+  display: flex;
+  flex-direction: column;
+}
+.admin-image-card > img {
+  display: block;
+  width: 100%;
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none;
+  aspect-ratio: auto !important;
+  object-fit: contain !important;
+  object-position: center;
+  padding: 0 !important;
+  background: #fff !important;
+}
+@media (max-width: 560px) {
+  .admin-image-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+    align-items: start !important;
+  }
+  .admin-image-card {
+    display: flex !important;
+    flex-direction: column !important;
+    height: auto !important;
+  }
+  .admin-image-card > img {
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    aspect-ratio: auto !important;
+  }
+}
