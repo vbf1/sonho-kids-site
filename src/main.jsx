@@ -33,6 +33,65 @@ const defaultContent = {
 const settingValue = (content, key) => content[key] || defaultContent[key];
 const whatsappLink = (content) => `https://wa.me/${(settingValue(content, 'whatsapp_phone').match(/\d/g) || []).join('')}?text=${encodeURIComponent(settingValue(content, 'whatsapp_message'))}`;
 
+function applyLogoPalette(imageUrl) {
+  const image = new Image();
+  image.crossOrigin = 'anonymous';
+  image.onload = () => {
+    try {
+      const canvas = document.createElement('canvas');
+      canvas.width = 96;
+      canvas.height = 96;
+      const context = canvas.getContext('2d', { willReadFrequently: true });
+      if (!context) return;
+      context.drawImage(image, 0, 0, 96, 96);
+      const pixels = context.getImageData(0, 0, 96, 96).data;
+      const groups = { pink: [], yellow: [], green: [], blue: [], purple: [], orange: [], navy: [] };
+      const hex = (value) => Math.max(0, Math.min(255, Math.round(value))).toString(16).padStart(2, '0');
+      for (let i = 0; i < pixels.length; i += 12) {
+        const r = pixels[i], g = pixels[i + 1], b = pixels[i + 2], alpha = pixels[i + 3];
+        if (alpha < 180) continue;
+        const max = Math.max(r, g, b), min = Math.min(r, g, b), delta = max - min;
+        const light = (max + min) / 510, saturation = max === 0 ? 0 : delta / max;
+        if (light < 0.28 && b > r * 0.8) groups.navy.push([r, g, b]);
+        if (saturation < 0.38 || light < 0.22 || light > 0.9) continue;
+        let hue = 0;
+        if (delta) {
+          if (max === r) hue = 60 * (((g - b) / delta) % 6);
+          else if (max === g) hue = 60 * ((b - r) / delta + 2);
+          else hue = 60 * ((r - g) / delta + 4);
+        }
+        if (hue < 0) hue += 360;
+        const color = [r, g, b];
+        if (hue < 18 || hue >= 330) groups.pink.push(color);
+        else if (hue < 42) groups.orange.push(color);
+        else if (hue < 75) groups.yellow.push(color);
+        else if (hue < 165) groups.green.push(color);
+        else if (hue < 255) groups.blue.push(color);
+        else groups.purple.push(color);
+      }
+      const average = (colors) => {
+        if (!colors.length) return null;
+        const sum = colors.reduce((total, color) => [total[0] + color[0], total[1] + color[1], total[2] + color[2]], [0, 0, 0]);
+        return '#' + sum.map((value) => hex(value / colors.length)).join('');
+      };
+      const palette = {
+        '--pink': average(groups.pink), '--yellow': average(groups.yellow),
+        '--green': average(groups.green), '--blue': average(groups.blue),
+        '--purple': average(groups.purple), '--orange': average(groups.orange),
+        '--navy': average(groups.navy)
+      };
+      Object.entries(palette).forEach(([name, value]) => {
+        if (value) document.documentElement.style.setProperty(name, value);
+      });
+      document.documentElement.dataset.logoPalette = 'loaded';
+    } catch (error) {
+      console.warn('Não foi possível extrair as cores da logo:', error);
+    }
+  };
+  image.onerror = () => console.warn('Não foi possível carregar a logo para extrair a paleta.');
+  image.src = imageUrl;
+}
+
 function WhatsAppIcon({ size = 20 }) {
   return <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M20.52 3.48A11.82 11.82 0 0 0 12.1 0C5.55 0 .22 5.33.22 11.88c0 2.1.55 4.15 1.6 5.96L.13 24l6.32-1.66a11.9 11.9 0 0 0 5.65 1.44h.01c6.55 0 11.88-5.33 11.88-11.88 0-3.17-1.23-6.15-3.47-8.42ZM12.1 21.76h-.01a9.9 9.9 0 0 1-5.04-1.38l-.36-.21-3.75.98 1-3.65-.24-.38a9.86 9.86 0 0 1-1.52-5.24c0-5.47 4.45-9.92 9.93-9.92a9.85 9.85 0 0 1 7.02 2.91 9.86 9.86 0 0 1 2.9 7.02c0 5.47-4.45 9.92-9.93 9.92Zm5.45-7.43c-.3-.15-1.77-.87-2.05-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.47-.89-.79-1.49-1.77-1.67-2.07-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.49s1.07 2.89 1.22 3.09c.15.2 2.1 3.2 5.09 4.49.71.31 1.27.5 1.7.64.72.23 1.37.2 1.88.12.58-.09 1.77-.72 2.02-1.42.25-.7.25-1.3.17-1.42-.07-.13-.27-.2-.57-.35Z"/></svg>;
 }
@@ -82,6 +141,9 @@ function App() {
     });
     return () => { active = false; };
   }, []);
+  useEffect(() => {
+    if (logoUrl) applyLogoPalette(logoUrl);
+  }, [logoUrl]);
   useEffect(() => {
     if (window.location.pathname.replace(/\/+$/, '').endsWith('/admin') || window.location.hash === '#/admin') return;
     const updateScrollState = () => setShowScrollTop(window.scrollY > 320);
