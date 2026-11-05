@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { supabase, mediaUrl } from './supabaseClient';
-import { ExternalLink, Upload, ImagePlus, Trash2, Save, LogOut, LoaderCircle, CheckCircle2, AlertCircle, Images, Settings2, X, ShieldAlert, RotateCw, SlidersHorizontal } from 'lucide-react';
+import { ExternalLink, Upload, ImagePlus, Trash2, Save, LogOut, LoaderCircle, CheckCircle2, AlertCircle, Images, Settings2, X, ShieldAlert, RotateCw, SlidersHorizontal, ChevronDown, Check } from 'lucide-react';
 import './admin.css';
 
 const OWNER = 'victor.vbf99@gmail.com';
