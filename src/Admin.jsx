@@ -6,7 +6,30 @@ import './admin.css';
 const OWNER = 'victor.vbf99@gmail.com';
 const categories = [['eventos', 'Fotos de eventos'], ['hero', 'Foto principal da primeira seção']];
 const defaultCatalogItems = [{"id":"cama-elastica","name":"Cama elástica","detail":"Pulos, energia e muita diversão para a criançada.","kind":"BRINQUEDO","emoji":"🤸","color":"pink","visualLabel":"ENERGIA E MOVIMENTO","active":true},{"id":"piscina-bolinhas","name":"Piscina de bolinhas","detail":"Um espaço colorido para brincar e se divertir.","kind":"BRINQUEDO","emoji":"🟡","color":"blue","visualLabel":"UM MAR DE CORES","active":true},{"id":"maquina-pipoca","name":"Máquina de pipoca","detail":"O cheirinho e o sabor que combinam com festa.","kind":"MÁQUINA","emoji":"🍿","color":"yellow","visualLabel":"SABOR DE FESTA","active":true},{"id":"algodao-doce","name":"Máquina de algodão-doce","detail":"Um toque doce e especial para seu evento.","kind":"MÁQUINA","emoji":"🍭","color":"purple","visualLabel":"UM TOQUE DE DOÇURA","active":true}];
-const editableFields = [["whatsapp_phone","WhatsApp (somente números, com DDI e DDD)"],["whatsapp_message","Mensagem inicial do WhatsApp"],["instagram_url","Link do Instagram"],["hero_eyebrow","Chamada pequena da primeira seção"],["hero_title","Título principal"],["hero_description","Descrição principal"],["hero_button","Texto do botão principal"],["about_eyebrow","Chamada da seção sobre"],["about_title","Título da seção sobre"],["about_description","Texto sobre a empresa"],["contact_eyebrow","Chamada da seção de contato"],["contact_title","Título da seção de contato"],["contact_description","Texto da seção de contato"],["footer_text","Texto do rodapé"],["toy_1_name","Nome — Cama elástica"],["toy_1_detail","Descrição — Cama elástica"],["toy_2_name","Nome — Piscina de bolinhas"],["toy_2_detail","Descrição — Piscina de bolinhas"],["toy_3_name","Nome — Máquina de pipoca"],["toy_3_detail","Descrição — Máquina de pipoca"],["toy_4_name","Nome — Máquina de algodão-doce"],["toy_4_detail","Descrição — Máquina de algodão-doce"]];
+const textFieldGroups = [
+  { id: 'hero', title: '1. Primeira seção — apresentação', fields: [
+    ["hero_eyebrow","Chamada pequena da primeira seção"],
+    ["hero_title","Título principal"],
+    ["hero_description","Descrição principal"],
+    ["hero_button","Texto do botão principal"]
+  ]},
+  { id: 'about', title: '2. Sobre a Sonho Kids', fields: [
+    ["about_eyebrow","Chamada da seção sobre"],
+    ["about_title","Título da seção sobre"],
+    ["about_description","Texto sobre a empresa"]
+  ]},
+  { id: 'contact', title: '3. Contato', fields: [
+    ["contact_eyebrow","Chamada da seção de contato"],
+    ["contact_title","Título da seção de contato"],
+    ["contact_description","Texto da seção de contato"],
+    ["whatsapp_phone","WhatsApp (somente números, com DDI e DDD)"],
+    ["whatsapp_message","Mensagem inicial do WhatsApp"],
+    ["instagram_url","Link do Instagram"]
+  ]},
+  { id: 'footer', title: '4. Rodapé', fields: [
+    ["footer_text","Texto do rodapé"]
+  ]}
+];
 const defaultSettings = {
   "whatsapp_phone": "5531999857343",
   "whatsapp_message": "Olá! Tenho interesse nos produtos da Sonho Kids Brinquedos. Gostaria de receber informações e fazer um orçamento para meu evento.",
@@ -264,8 +287,13 @@ export default function Admin() {
 
   return <main className="admin-page"><header className="admin-top"><a className="admin-back" href="../"><ExternalLink size={17}/> Ir para o site</a><div className="admin-top-brand">{logoPreview ? <img src={logoPreview} alt="Logo Sonho Kids Brinquedos"/> : <b>Sonho Kids</b>}<span>Painel de conteúdo</span></div><button className="admin-logout" onClick={logout}><LogOut size={16}/> Sair</button></header><div className="admin-content"><div className="admin-heading"><span className="admin-kicker">GERENCIAMENTO DO SITE</span><h1>Olá! Vamos atualizar sua vitrine?</h1><p>As alterações salvas aqui aparecem no site público, inclusive no celular dos visitantes.</p></div>{error && <div className="admin-alert error"><AlertCircle size={16}/>{error}</div>}{notice && <div className="admin-alert success"><CheckCircle2 size={16}/>{notice}</div>}
 
-  <section className="admin-panel"><div className="admin-panel-title"><div className="admin-icon"><Settings2/></div><div><h2>Informações e contatos do site</h2><p>Edite telefone, redes sociais, textos da página inicial e informações dos produtos. Salve para publicar no site.</p></div></div><form className="site-settings-form" onSubmit={saveSiteSettings}><div className="site-settings-grid">{editableFields.map(([key,label])=><label className={['whatsapp_message','hero_description','about_title','about_description','contact_title','contact_description','footer_text'].includes(key) || key.endsWith('_detail') ? 'site-setting-field wide' : 'site-setting-field'} key={key}><span>{label}</span>{['whatsapp_message','hero_description','about_title','about_description','contact_title','contact_description','footer_text'].includes(key) || key.endsWith('_detail') ? <textarea rows="3" value={siteSettings[key] ?? ''} onChange={(e)=>setSiteSettings((current)=>({...current,[key]:e.target.value}))}/> : <input value={siteSettings[key] ?? ''} onChange={(e)=>setSiteSettings((current)=>({...current,[key]:e.target.value}))}/>}</label>)}</div><button className="admin-primary" type="submit" disabled={busy}><Save size={16}/>{busy ? 'Salvando...' : 'Salvar todas as informações'}</button></form></section>
-  <section className="admin-panel catalog-manager">
+  <section className="admin-panel"><div className="admin-panel-title"><div className="admin-icon"><Settings2/></div><div><h2>Textos e informações do site</h2><p>Os campos estão organizados na mesma sequência em que as seções aparecem na página pública. Edite e salve ao final.</p></div></div><form className="site-settings-form" onSubmit={saveSiteSettings}>
+    {textFieldGroups.map((group) => <React.Fragment key={group.id}>
+      <div className="site-settings-group">
+        <h3>{group.title}</h3>
+        <div className="site-settings-grid">{group.fields.map(([key,label])=><label className={['whatsapp_message','hero_description','about_title','about_description','contact_title','contact_description','footer_text'].includes(key) ? 'site-setting-field wide' : 'site-setting-field'} key={key}><span>{label}</span>{['whatsapp_message','hero_description','about_title','about_description','contact_title','contact_description','footer_text'].includes(key) ? <textarea rows="3" value={siteSettings[key] ?? ''} onChange={(e)=>setSiteSettings((current)=>({...current,[key]:e.target.value}))}/> : <input value={siteSettings[key] ?? ''} onChange={(e)=>setSiteSettings((current)=>({...current,[key]:e.target.value}))}/>}</label>)}</div>
+      </div>
+      {group.id === 'hero' && (<section className="admin-panel catalog-manager">
     <div className="admin-panel-title"><div className="admin-icon"><Images/></div><div><h2>Brinquedos e máquinas do site</h2><p>Cadastre novos produtos, altere nomes e descrições e escolha quais aparecem na vitrine. Produtos desativados ficam ocultos, mas suas fotos são preservadas.</p></div></div>
     <div className="catalog-display-setting">
       <h3>Como os produtos serão exibidos no site?</h3>
@@ -304,7 +332,10 @@ export default function Admin() {
       <small>Categoria de fotos: {item.id} — use esta categoria ao enviar as fotos deste produto.</small>
     </article>)}</div>
     <button className="admin-primary" type="button" disabled={busy} onClick={saveSiteSettings}><Save size={16}/> Salvar brinquedos e máquinas</button>
-  </section>
+  </section>)}
+    </React.Fragment>)}
+    <button className="admin-primary" type="submit" disabled={busy}><Save size={16}/>{busy ? 'Salvando...' : 'Salvar todas as informações'}</button>
+  </form></section>
   <section className="admin-panel"><div className="admin-panel-title"><div className="admin-icon"><Settings2/></div><div><h2>Logo e identidade visual</h2><p>Troque a logo que aparece no cabeçalho e no rodapé do site.</p></div></div><div className="logo-editor">{logoPreview ? <img src={logoPreview} alt="Logo atual da Sonho Kids"/> : <div className="logo-placeholder">Sua logo aparecerá aqui</div>}<div className="logo-controls"><label className="admin-upload"><Upload size={17}/> Escolher nova logo<input type="file" accept="image/*" onChange={(e) => {const f=e.target.files?.[0];if(f){setLogoFile(f);setLogoPreview(URL.createObjectURL(f));}}}/></label><button className="admin-primary" onClick={uploadLogo} disabled={!logoFile || busy}><Save size={16}/> Salvar logo</button><small>PNG, JPG, WebP ou SVG • até 8 MB</small></div></div></section>
   <section className="admin-panel"><div className="admin-panel-title"><div className="admin-icon"><ImagePlus/></div><div><h2>Imagem principal da página inicial</h2><p>Troque a foto que aparece ao lado do título “Uma festa cheia de cor, sorrisos e diversão!”.</p></div></div><div className="hero-image-editor">{images.find((image) => image.category === 'hero') && !heroPreview ? <img className="hero-image-current" src={mediaUrl(images.find((image) => image.category === 'hero').path)} alt="Imagem principal atual do site"/> : heroPreview ? <img className="hero-image-current" src={heroPreview} alt="Prévia da nova imagem principal"/> : <div className="hero-image-current hero-image-empty">Nenhuma foto principal cadastrada</div>}<div className="hero-image-controls"><label className="admin-upload"><Upload size={17}/> Escolher nova imagem<input type="file" accept="image/*" onChange={(e) => {const f=e.target.files?.[0];if(f){setHeroFile(f);setHeroPreview(URL.createObjectURL(f));}}}/></label><button className="admin-primary" type="button" onClick={uploadHeroImage} disabled={!heroFile || busy}><Save size={16}/> {busy ? 'Enviando...' : 'Salvar imagem principal'}</button><small>JPG, PNG ou WebP • até 8 MB. A nova imagem substitui visualmente a atual no site.</small></div></div></section>
   <section className="admin-panel"><div className="admin-panel-title"><div className="admin-icon"><ImagePlus/></div><div><h2>Adicionar fotos</h2><p>Envie fotos reais dos brinquedos e dos eventos direto do celular ou computador.</p></div></div><div className="upload-row"><label className="admin-select-label">Onde a foto será exibida<select value={category} onChange={(e) => setCategory(e.target.value)}>{categoryOptions.map(([value,label])=><option value={value} key={value}>{label}</option>)}</select></label><label className="admin-file-drop"><Upload/><b>Selecionar fotos</b><span>Você pode escolher várias imagens</span><input type="file" accept="image/*" multiple onChange={(e)=>setSelectedFiles(Array.from(e.target.files || []))}/></label></div>{selectedFiles.length>0 && <div className="selected-files">{selectedFiles.map((f)=><span key={f.name}>{f.name}</span>)}</div>}<button className="admin-primary upload-submit" onClick={uploadImages} disabled={!selectedFiles.length || busy}>{busy ? 'Enviando...' : <><Upload size={17}/> Enviar {selectedFiles.length || ''} foto(s)</>}</button><small className="admin-hint">Fotos JPG, PNG e WebP são redimensionadas automaticamente (máximo 1600 × 1200), sem deformar. GIF e SVG são preservados.</small></section>
