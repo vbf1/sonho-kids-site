@@ -1064,7 +1064,7 @@
 .image-editor-preview:active { cursor:grabbing; }
 .image-editor-preview img {
   position:absolute; inset:0; display:block; width:100%; height:100%;
-  max-width:none; max-height:none; object-fit:contain; transition:none;
+  max-width:none; max-height:none; object-fit:cover; transition:none;
   pointer-events:none; user-select:none;
 }
 .image-editor-crop-grid {
