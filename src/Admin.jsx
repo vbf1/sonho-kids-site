@@ -113,11 +113,11 @@ const createEditedImageFile = async (file, settings) => {
     if (rotatedWidth / rotatedHeight > target) baseWidth = rotatedHeight * target;
     else baseHeight = rotatedWidth / target;
   }
-  const zoom = Math.max(1, Number(settings.zoom) || 1);
-  const cropWidth = baseWidth / zoom, cropHeight = baseHeight / zoom;
-  const maxX = Math.max(0, rotatedWidth - cropWidth), maxY = Math.max(0, rotatedHeight - cropHeight);
-  const sourceX = maxX * (Math.min(100, Math.max(0, Number(settings.cropX) || 0)) / 100);
-  const sourceY = maxY * (Math.min(100, Math.max(0, Number(settings.cropY) || 0)) / 100);
+  const selection = settings.cropRect || { x: 0, y: 0, w: 100, h: 100 };
+  const sourceX = rotatedWidth * Math.max(0, Math.min(100, selection.x)) / 100;
+  const sourceY = rotatedHeight * Math.max(0, Math.min(100, selection.y)) / 100;
+  const cropWidth = rotatedWidth * Math.max(1, Math.min(100, selection.w)) / 100;
+  const cropHeight = rotatedHeight * Math.max(1, Math.min(100, selection.h)) / 100;
   const output = document.createElement('canvas');
   output.width = Math.max(1, Math.round(cropWidth)); output.height = Math.max(1, Math.round(cropHeight));
   const context = output.getContext('2d');
@@ -167,10 +167,9 @@ export default function Admin() {
   const [busy, setBusy] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [editingImage, setEditingImage] = useState(null);
-  const [editSettings, setEditSettings] = useState({ rotation: 0, brightness: 100, contrast: 100, saturation: 100, ratio: 'original', cropX: 50, cropY: 50, zoom: 1 });
+  const [editSettings, setEditSettings] = useState({ rotation: 0, brightness: 100, contrast: 100, saturation: 100, ratio: '1:1' });
   const [previewSize, setPreviewSize] = useState(null);
-  const [cropDrag, setCropDrag] = useState(null);
-  const cropPointers = useRef(new Map());
+  const [cropRect, setCropRect] = useState({ x: 25, y: 0, w: 50, h: 100 });
   const cropGesture = useRef(null);
   const [images, setImages] = useState([]);
   const [category, setCategory] = useState('cama-elastica');
@@ -267,56 +266,54 @@ export default function Admin() {
       const extension = type === 'image/png' ? 'png' : type === 'image/webp' ? 'webp' : 'jpg';
       const file = new File([blob], (item.title || 'foto') + '.' + extension, { type });
       setEditingImage({ file, target: 'existing', item, preview: URL.createObjectURL(file) });
-      setPreviewSize(null); setCropDrag(null);
-      setEditSettings({ rotation: 0, brightness: 100, contrast: 100, saturation: 100, ratio: 'original', cropX: 50, cropY: 50, zoom: 1 });
+      setPreviewSize(null); cropGesture.current = null;
+      setEditSettings({ rotation: 0, brightness: 100, contrast: 100, saturation: 100, ratio: '1:1' });
+      setCropRect({ x: 25, y: 0, w: 50, h: 100 });
     } catch (e) { setError(e.message || 'Não foi possível abrir esta foto.'); }
     finally { setBusy(false); }
   };
-  const cropDistance = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
+  const buildCropRect = (width, height, ratio) => {
+    const imageRatio = width / Math.max(1, height);
+    const targetRatio = ratio === 'original' ? imageRatio : ratio.split(':').map(Number).reduce((w, h) => w / h);
+    let w = 100, h = 100;
+    if (imageRatio > targetRatio) w = 100 * targetRatio / imageRatio;
+    else h = 100 * imageRatio / targetRatio;
+    return { x: (100 - w) / 2, y: (100 - h) / 2, w, h };
+  };
   const handleCropPointerDown = (event) => {
-    if (event.pointerType === 'mouse' && event.button !== 0) return;
+    const handle = event.target.closest('[data-crop-handle]')?.getAttribute('data-crop-handle') || 'move';
+    const rect = event.currentTarget.getBoundingClientRect();
+    cropGesture.current = { x: event.clientX, y: event.clientY, crop: { ...cropRect }, width: rect.width, height: rect.height, handle };
     event.currentTarget.setPointerCapture(event.pointerId);
-    cropPointers.current.set(event.pointerId, { x: event.clientX, y: event.clientY });
-    const points = [...cropPointers.current.values()];
-    if (points.length >= 2) {
-      cropGesture.current = { type: 'pinch', distance: Math.max(1, cropDistance(points[0], points[1])), zoom: editSettings.zoom, cropX: editSettings.cropX, cropY: editSettings.cropY };
-    } else {
-      cropGesture.current = { type: 'drag', x: event.clientX, y: event.clientY, cropX: editSettings.cropX, cropY: editSettings.cropY };
-    }
-    setCropDrag(true);
+    event.preventDefault();
   };
   const handleCropPointerMove = (event) => {
-    if (!cropPointers.current.has(event.pointerId)) return;
-    cropPointers.current.set(event.pointerId, { x: event.clientX, y: event.clientY });
-    const points = [...cropPointers.current.values()];
     const gesture = cropGesture.current;
     if (!gesture) return;
-    if (points.length >= 2 && gesture.type === 'pinch') {
-      const distance = Math.max(1, cropDistance(points[0], points[1]));
-      const nextZoom = Math.max(1, Math.min(3, gesture.zoom * distance / gesture.distance));
-      setEditSettings((value) => ({ ...value, zoom: Number(nextZoom.toFixed(2)) }));
+    const dx = (event.clientX - gesture.x) / Math.max(1, gesture.width) * 100;
+    const dy = (event.clientY - gesture.y) / Math.max(1, gesture.height) * 100;
+    const original = gesture.crop;
+    if (gesture.handle === 'move') {
+      setCropRect({ ...original, x: Math.max(0, Math.min(100 - original.w, original.x + dx)), y: Math.max(0, Math.min(100 - original.h, original.y + dy)) });
       return;
     }
-    if (gesture.type === 'drag') {
-      const rect = event.currentTarget.getBoundingClientRect();
-      setEditSettings((value) => ({
-        ...value,
-        cropX: Math.max(0, Math.min(100, gesture.cropX - ((event.clientX - gesture.x) / Math.max(1, rect.width)) * 100)),
-        cropY: Math.max(0, Math.min(100, gesture.cropY - ((event.clientY - gesture.y) / Math.max(1, rect.height)) * 100))
-      }));
-    }
+    const aspect = original.w / original.h;
+    const right = original.x + original.w, bottom = original.y + original.h;
+    let w = original.w, h = original.h, x = original.x, y = original.y;
+    if (gesture.handle.includes('e')) w = Math.max(8, Math.min(100 - original.x, original.w + dx));
+    if (gesture.handle.includes('w')) { w = Math.max(8, Math.min(right, original.w - dx)); x = right - w; }
+    if (gesture.handle.includes('s')) h = Math.max(8, Math.min(100 - original.y, original.h + dy));
+    if (gesture.handle.includes('n')) { h = Math.max(8, Math.min(bottom, original.h - dy)); y = bottom - h; }
+    if (Math.abs(dx) >= Math.abs(dy)) h = w / aspect; else w = h * aspect;
+    if (gesture.handle.includes('w')) x = right - w;
+    if (gesture.handle.includes('n')) y = bottom - h;
+    if (x < 0) { w += x; x = 0; h = w / aspect; if (gesture.handle.includes('n')) y = bottom - h; }
+    if (y < 0) { h += y; y = 0; w = h * aspect; if (gesture.handle.includes('w')) x = right - w; }
+    if (x + w > 100) { w = 100 - x; h = w / aspect; if (gesture.handle.includes('n')) y = bottom - h; }
+    if (y + h > 100) { h = 100 - y; w = h * aspect; if (gesture.handle.includes('w')) x = right - w; }
+    setCropRect({ x: Math.max(0, x), y: Math.max(0, y), w: Math.max(1, w), h: Math.max(1, h) });
   };
-  const handleCropPointerEnd = (event) => {
-    cropPointers.current.delete(event.pointerId);
-    const remaining = [...cropPointers.current.values()];
-    if (remaining.length === 1) {
-      const point = remaining[0];
-      cropGesture.current = { type: 'drag', x: point.x, y: point.y, cropX: editSettings.cropX, cropY: editSettings.cropY };
-    } else {
-      cropGesture.current = null;
-    }
-    if (!remaining.length) setCropDrag(null);
-  };
+  const handleCropPointerEnd = () => { cropGesture.current = null; };
   const closeImageEditor = () => {
     if (editingImage?.preview) URL.revokeObjectURL(editingImage.preview);
     setEditingImage(null);
@@ -524,10 +521,13 @@ export default function Admin() {
   <section className="admin-panel" id="fotos-publicadas"><div className="admin-panel-title"><div className="admin-icon"><Images/></div><div><h2>6. Organizar fotos publicadas</h2><p>Aqui você identifica exatamente onde cada foto aparece. As imagens estão separadas por seção do site.</p></div><strong className="admin-count">{images.length} fotos</strong></div>
   <div className="photo-manager-guide"><strong>Como organizar:</strong><span><b>Nome da foto:</b> identificação interna para você reconhecer a imagem.</span><span><b>Seção do site:</b> escolha onde a imagem será exibida.</span><span><b>Excluir:</b> remove a foto do site e do armazenamento. Essa ação não pode ser desfeita.</span></div>
   {images.length ? groupedImages.map((group)=><div className="photo-category-group" key={group.key}><div className="photo-category-heading"><h3>{group.label}</h3><span>{group.items.length} {group.items.length===1?'foto':'fotos'}</span></div><div className="admin-image-grid">{group.items.map((item)=><article className="admin-image-card" key={item.id}><img src={mediaUrl(item.path)} alt={item.title || group.label}/><div className="admin-image-fields"><div className="photo-card-location"><span>APARECE EM</span><strong>{categoryLabel(item.category)}</strong></div><label className="photo-field-label">Nome/identificação da foto<input aria-label="Nome ou identificação da foto" defaultValue={item.title || ''} placeholder="Ex.: Festa de aniversário" onBlur={(e)=>e.target.value!==item.title && updateImage(item,{title:e.target.value})}/></label><label className="photo-field-label">Seção onde será exibida<AdminSelect title="Onde esta foto será exibida?" ariaLabel="Seção onde será exibida" description="Escolha em qual seção do site esta foto deve aparecer." value={item.category} onChange={(nextValue)=>updateImage(item,{category:nextValue})} options={categoryOptions.map(([value,label],index)=>({value,label,description:index<catalogItems.length?'Fotos deste brinquedo ou máquina':'Seção de conteúdo do site'}))}/></label><details className="photo-technical-details"><summary>Informações técnicas (somente painel)</summary><small>Arquivo: {item.path.split('/').pop()}</small><small>Caminho: {item.path}</small><small>ID: {item.id}</small></details><button type="button" className="image-edit-trigger photo-edit-published" onClick={()=>startExistingImageEditing(item)} disabled={busy}><SlidersHorizontal size={15}/> Editar foto publicada</button><button className="admin-delete" onClick={()=>setDeleteTarget(item)} disabled={busy}><Trash2 size={15}/> Excluir esta foto</button></div></article>)}</div></div>) : <div className="admin-empty">Ainda não há fotos cadastradas. Use “Enviar fotos para o site” acima e escolha a seção correta para cada imagem.</div>}</section>{categoryPickerOpen && <div className="category-picker-backdrop" onMouseDown={(event)=>{if(event.target===event.currentTarget)setCategoryPickerOpen(false);}}><section className="category-picker-modal" role="dialog" aria-modal="true" aria-labelledby="category-picker-title"><header className="category-picker-header"><div className="category-picker-icon"><ImagePlus size={21}/></div><button type="button" className="category-picker-close" onClick={()=>setCategoryPickerOpen(false)} aria-label="Fechar"><X size={19}/></button><span>ORGANIZE SUAS FOTOS</span><h2 id="category-picker-title">Onde a foto será exibida?</h2><p>Escolha a seção do site em que as imagens enviadas vão aparecer.</p></header><div className="category-picker-options">{categoryOptions.map(([value,label],index)=><button type="button" key={value} className={'category-picker-option'+(category===value?' is-selected':'')} onClick={()=>{setCategory(value);setCategoryPickerOpen(false);}}><span className="category-picker-option-icon">{index<catalogItems.length?'🎈':'🖼️'}</span><span className="category-picker-option-copy"><strong>{label}</strong><small>{index<catalogItems.length?'Fotos deste brinquedo ou máquina':'Seção de conteúdo do site'}</small></span><span className="category-picker-check">{category===value?<Check size={17}/>:null}</span></button>)}</div><footer className="category-picker-footer"><button type="button" onClick={()=>setCategoryPickerOpen(false)}>Cancelar</button></footer></section></div>}{editingImage && <div className="image-editor-backdrop"><section className="image-editor-modal" role="dialog" aria-modal="true" aria-labelledby="image-editor-title"><header className="image-editor-header"><div><span>AJUSTES DA FOTO</span><h2 id="image-editor-title">Editar imagem</h2><p>Faça os ajustes e confira a prévia antes de publicar.</p></div><button type="button" onClick={closeImageEditor} disabled={busy} aria-label="Fechar editor"><X size={20}/></button></header><div className="image-editor-preview-wrap">
-  <div className="image-editor-preview" style={{aspectRatio:editSettings.ratio==='original'?(previewSize?((Math.abs(editSettings.rotation%180)===90?previewSize.height:previewSize.width)+' / '+(Math.abs(editSettings.rotation%180)===90?previewSize.width:previewSize.height)):'4 / 3'):editSettings.ratio.replace(':',' / ')}} onPointerDown={handleCropPointerDown} onPointerMove={handleCropPointerMove} onPointerUp={handleCropPointerEnd} onPointerCancel={handleCropPointerEnd} onLostPointerCapture={handleCropPointerEnd} aria-label="Arraste com um dedo para mover e use dois dedos para aproximar ou afastar">
-    <img src={editingImage.preview} alt="Prévia da foto" onLoad={(e)=>setPreviewSize({width:e.currentTarget.naturalWidth,height:e.currentTarget.naturalHeight})} style={{filter:'brightness('+editSettings.brightness+'%) contrast('+editSettings.contrast+'%) saturate('+editSettings.saturation+'%)',transform:'translate('+((50-editSettings.cropX)*(editSettings.zoom-1))+'%, '+((50-editSettings.cropY)*(editSettings.zoom-1))+'%) rotate('+editSettings.rotation+'deg) scale('+editSettings.zoom+')',objectPosition:editSettings.cropX+'% '+editSettings.cropY+'%'}}/>
-    <span className="image-editor-crop-grid" aria-hidden="true"><i/><i/><i/><i/></span>
+  <div className="image-editor-preview" style={{aspectRatio:previewSize?((Math.abs(editSettings.rotation%180)===90?previewSize.height:previewSize.width)+' / '+(Math.abs(editSettings.rotation%180)===90?previewSize.width:previewSize.height)):'4 / 3'}}>
+    <img src={editingImage.preview} alt="Prévia da foto" onLoad={(e)=>{const size={width:e.currentTarget.naturalWidth,height:e.currentTarget.naturalHeight};setPreviewSize(size);setCropRect(buildCropRect(Math.abs(editSettings.rotation%180)===90?size.height:size.width,Math.abs(editSettings.rotation%180)===90?size.width:size.height,editSettings.ratio));}} style={{filter:'brightness('+editSettings.brightness+'%) contrast('+editSettings.contrast+'%) saturate('+editSettings.saturation+'%)',transform:'rotate('+editSettings.rotation+'deg)'}}/>
+    <div className="image-editor-crop-selection" style={{left:cropRect.x+'%',top:cropRect.y+'%',width:cropRect.w+'%',height:cropRect.h+'%'}} onPointerDown={handleCropPointerDown} onPointerMove={handleCropPointerMove} onPointerUp={handleCropPointerEnd} onPointerCancel={handleCropPointerEnd} onLostPointerCapture={handleCropPointerEnd}>
+      <span className="image-editor-crop-grid" aria-hidden="true"><i/><i/><i/><i/></span>
+      {['nw','n','ne','e','se','s','sw','w'].map((handle)=><span key={handle} className={'image-editor-crop-handle handle-'+handle} data-crop-handle={handle} onPointerDown={handleCropPointerDown} aria-hidden="true"/>)}
+    </div>
   </div>
-  <small className="image-editor-drag-hint">Arraste com um dedo para posicionar • use dois dedos para dar zoom</small>
-</div><div className="image-editor-tools"><button type="button" className="image-editor-rotate" onClick={()=>setEditSettings((v)=>({...v,rotation:(v.rotation+90)%360}))}><RotateCw size={16}/> Girar 90°</button><label className="image-editor-ratio">Formato de corte<AdminSelect title="Formato de corte" value={editSettings.ratio} onChange={(nextValue)=>setEditSettings((v)=>({...v,ratio:nextValue}))} options={[{value:'original',label:'Original',description:'Mantém as proporções da foto'},{value:'1:1',label:'Quadrado (1:1)',description:'Ideal para imagens quadradas'},{value:'4:3',label:'Paisagem (4:3)',description:'Formato horizontal tradicional'},{value:'16:9',label:'Horizontal (16:9)',description:'Formato panorâmico'},{value:'3:4',label:'Retrato (3:4)',description:'Formato vertical'}]}/></label><div className="image-editor-crop-controls"><strong>Recortar e enquadrar</strong><label><span>Zoom <b>{Number(editSettings.zoom).toFixed(1)}×</b></span><input type="range" min="1" max="3" step="0.1" value={editSettings.zoom} onChange={(e)=>setEditSettings((v)=>({...v,zoom:Number(e.target.value)}))}/></label><small>Mova a foto diretamente na moldura. No celular, faça o movimento de pinça para controlar o zoom.</small></div><div className="image-editor-sliders">{[['brightness','Brilho'],['contrast','Contraste'],['saturation','Saturação']].map(([key,label])=><label key={key}><span>{label}<b>{editSettings[key]}%</b></span><input type="range" min="50" max="150" step="1" value={editSettings[key]} onChange={(e)=>setEditSettings((v)=>({...v,[key]:Number(e.target.value)}))}/></label>)}</div></div><footer className="image-editor-actions"><button type="button" className="image-editor-reset" onClick={()=>{setEditSettings({rotation:0,brightness:100,contrast:100,saturation:100,ratio:'original',cropX:50,cropY:50,zoom:1});setCropDrag(null);}}>Redefinir</button><button type="button" className="image-editor-cancel" onClick={closeImageEditor} disabled={busy}>Cancelar</button><button type="button" className="image-editor-apply" onClick={applyImageEditing} disabled={busy}>{busy?'Aplicando...':'Aplicar edição'}</button></footer></section></div>}{deleteTarget && <div className="delete-modal-backdrop" onMouseDown={(event)=>{if(event.target===event.currentTarget && !busy)setDeleteTarget(null);}}><section className="delete-modal" role="dialog" aria-modal="true" aria-labelledby="delete-modal-title"><button className="delete-modal-close" type="button" aria-label="Fechar" onClick={()=>setDeleteTarget(null)} disabled={busy}><X size={19}/></button><div className="delete-modal-icon"><ShieldAlert size={27}/></div><span className="delete-modal-eyebrow">CONFIRMAÇÃO DE EXCLUSÃO</span><h2 id="delete-modal-title">Tem certeza que deseja excluir?</h2><p>Esta foto será removida do site e do armazenamento. Essa ação não poderá ser desfeita.</p><div className="delete-modal-preview"><img src={mediaUrl(deleteTarget.path)} alt={deleteTarget.title || 'Foto selecionada para exclusão'}/><div><strong>{deleteTarget.title || 'Foto sem identificação'}</strong><span>{categoryLabel(deleteTarget.category)}</span></div></div><div className="delete-modal-actions"><button type="button" className="delete-modal-cancel" onClick={()=>setDeleteTarget(null)} disabled={busy}>Manter foto</button><button type="button" className="delete-modal-confirm" onClick={()=>deleteImage(deleteTarget)} disabled={busy}><Trash2 size={16}/>{busy ? 'Excluindo...' : 'Excluir foto'}</button></div></section></div>}<p className="admin-footer-note">Painel privado • Conteúdo armazenado com segurança no Supabase</p></div></main>;
+  <small className="image-editor-drag-hint">Arraste o quadrado para escolher a área. Puxe os cantos ou as laterais para redimensionar.</small>
+</div><div className="image-editor-tools"><button type="button" className="image-editor-rotate" onClick={()=>setEditSettings((v)=>({...v,rotation:(v.rotation+90)%360}))}><RotateCw size={16}/> Girar 90°</button><label className="image-editor-ratio">Formato de corte<AdminSelect title="Formato de corte" value={editSettings.ratio} onChange={(nextValue)=>{setEditSettings((v)=>({...v,ratio:nextValue}));if(previewSize)setCropRect(buildCropRect(Math.abs(editSettings.rotation%180)===90?previewSize.height:previewSize.width,Math.abs(editSettings.rotation%180)===90?previewSize.width:previewSize.height,nextValue));}} options={[{value:'original',label:'Original',description:'Mantém as proporções da foto'},{value:'1:1',label:'Quadrado (1:1)',description:'Ideal para imagens quadradas'},{value:'4:3',label:'Paisagem (4:3)',description:'Formato horizontal tradicional'},{value:'16:9',label:'Horizontal (16:9)',description:'Formato panorâmico'},{value:'3:4',label:'Retrato (3:4)',description:'Formato vertical'}]}/></label><div className="image-editor-crop-controls"><strong>Área selecionada</strong><small>Mova a seleção inteira ou ajuste seu tamanho pelos pontos brancos nos cantos e nas laterais.</small></div><div className="image-editor-sliders">{[['brightness','Brilho'],['contrast','Contraste'],['saturation','Saturação']].map(([key,label])=><label key={key}><span>{label}<b>{editSettings[key]}%</b></span><input type="range" min="50" max="150" step="1" value={editSettings[key]} onChange={(e)=>setEditSettings((v)=>({...v,[key]:Number(e.target.value)}))}/></label>)}</div></div><footer className="image-editor-actions"><button type="button" className="image-editor-reset" onClick={()=>{setEditSettings({rotation:0,brightness:100,contrast:100,saturation:100,ratio:'1:1'});setCropRect({x:25,y:0,w:50,h:100});cropGesture.current=null;}}>Redefinir</button><button type="button" className="image-editor-cancel" onClick={closeImageEditor} disabled={busy}>Cancelar</button><button type="button" className="image-editor-apply" onClick={applyImageEditing} disabled={busy}>{busy?'Aplicando...':'Aplicar edição'}</button></footer></section></div>}{deleteTarget && <div className="delete-modal-backdrop" onMouseDown={(event)=>{if(event.target===event.currentTarget && !busy)setDeleteTarget(null);}}><section className="delete-modal" role="dialog" aria-modal="true" aria-labelledby="delete-modal-title"><button className="delete-modal-close" type="button" aria-label="Fechar" onClick={()=>setDeleteTarget(null)} disabled={busy}><X size={19}/></button><div className="delete-modal-icon"><ShieldAlert size={27}/></div><span className="delete-modal-eyebrow">CONFIRMAÇÃO DE EXCLUSÃO</span><h2 id="delete-modal-title">Tem certeza que deseja excluir?</h2><p>Esta foto será removida do site e do armazenamento. Essa ação não poderá ser desfeita.</p><div className="delete-modal-preview"><img src={mediaUrl(deleteTarget.path)} alt={deleteTarget.title || 'Foto selecionada para exclusão'}/><div><strong>{deleteTarget.title || 'Foto sem identificação'}</strong><span>{categoryLabel(deleteTarget.category)}</span></div></div><div className="delete-modal-actions"><button type="button" className="delete-modal-cancel" onClick={()=>setDeleteTarget(null)} disabled={busy}>Manter foto</button><button type="button" className="delete-modal-confirm" onClick={()=>deleteImage(deleteTarget)} disabled={busy}><Trash2 size={16}/>{busy ? 'Excluindo...' : 'Excluir foto'}</button></div></section></div>}<p className="admin-footer-note">Painel privado • Conteúdo armazenado com segurança no Supabase</p></div></main>;
 }
