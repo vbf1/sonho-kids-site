@@ -890,18 +890,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 .moments-grid .moment-card:hover { transform: none; }
 
 
-/* Paleta tipográfica alinhada à identidade colorida da logo Sonho Kids */
-:root {
-  --navy: #352653;
-  --purple: #7652b8;
-  --pink: #e94f91;
-  --yellow: #f6c744;
-  --blue: #3997d2;
-  --green: #45ad83;
-  --orange: #ed8740;
-  --muted: #777286;
-  color: var(--navy);
-}
+/* Identidade visual vinculada às cores reais extraídas da logo ativa no Supabase. */
 .brand-name,
 .hero h1,
 .section-heading h2,
@@ -931,7 +920,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 .product-photo-count {
   color: var(--purple);
 }
-.eyebrow-dot { background: var(--pink); box-shadow: 0 0 0 5px #e94f911b; }
+.eyebrow-dot { background: var(--pink); box-shadow: 0 0 0 5px color-mix(in srgb, var(--pink) 12%, transparent); }
 .site-header nav a:hover,
 .toy-info a,
 .toy-card-cta,
@@ -948,7 +937,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   background: var(--purple);
 }
 .toy-kind {
-  background: #f2ecfb;
+  background: color-mix(in srgb, var(--purple) 10%, white);
   color: var(--purple);
 }
 .hero-points svg,
@@ -956,10 +945,10 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 .instagram-note > svg { color: var(--pink); }
 .toy-spark { color: var(--orange); }
 .about-copy .eyebrow { color: var(--yellow); }
-.about-copy h2 span { color: #ffb4d0; }
+.about-copy h2 span { color: var(--pink); }
 .value-yellow { background: var(--yellow); }
-.value-blue { background: #77b9e5; }
-.value-pink { background: #f18ab5; }
+.value-blue { background: var(--blue); }
+.value-pink { background: var(--pink); }
 a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible {
   outline-color: var(--yellow);
 }
