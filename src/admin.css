@@ -1075,15 +1075,32 @@
 .image-editor-crop-grid:before,.image-editor-crop-grid:after { content:""; position:absolute; pointer-events:none; background:rgba(255,255,255,.78); }
 .image-editor-crop-grid:before { left:33.333%; top:0; width:1px; height:100%; box-shadow:calc(100% - 1px) 0 rgba(255,255,255,.78); }
 .image-editor-crop-grid:after { top:33.333%; left:0; width:100%; height:1px; box-shadow:0 calc(100% - 1px) rgba(255,255,255,.78); }
-.image-editor-crop-handle { position:absolute; z-index:3; display:block; width:18px; height:18px; border:2px solid #6e50a6; border-radius:50%; background:#fff; touch-action:none; box-shadow:0 1px 5px rgba(0,0,0,.25); }
-.handle-nw { left:-9px; top:-9px; cursor:nwse-resize; }
-.handle-ne { right:-9px; top:-9px; cursor:nesw-resize; }
-.handle-sw { left:-9px; bottom:-9px; cursor:nesw-resize; }
-.handle-se { right:-9px; bottom:-9px; cursor:nwse-resize; }
-.handle-n { left:calc(50% - 9px); top:-9px; cursor:ns-resize; }
-.handle-s { left:calc(50% - 9px); bottom:-9px; cursor:ns-resize; }
-.handle-w { left:-9px; top:calc(50% - 9px); cursor:ew-resize; }
-.handle-e { right:-9px; top:calc(50% - 9px); cursor:ew-resize; }
+.image-editor-crop-handle {
+  position:absolute; z-index:4; display:block; width:30px; height:30px;
+  box-sizing:border-box; border:0; border-radius:8px; background:transparent;
+  touch-action:none; user-select:none; -webkit-tap-highlight-color:transparent;
+}
+.image-editor-crop-handle:after {
+  content:""; position:absolute; width:12px; height:12px; box-sizing:border-box;
+  border:2px solid #6e50a6; border-radius:50%; background:#fff;
+  box-shadow:0 1px 5px rgba(0,0,0,.3); pointer-events:none;
+}
+.handle-nw { left:0; top:0; cursor:nwse-resize; }
+.handle-nw:after { left:0; top:0; }
+.handle-ne { right:0; top:0; cursor:nesw-resize; }
+.handle-ne:after { right:0; top:0; }
+.handle-sw { left:0; bottom:0; cursor:nesw-resize; }
+.handle-sw:after { left:0; bottom:0; }
+.handle-se { right:0; bottom:0; cursor:nwse-resize; }
+.handle-se:after { right:0; bottom:0; }
+.handle-n { left:50%; top:0; transform:translateX(-50%); cursor:ns-resize; }
+.handle-n:after { left:9px; top:0; }
+.handle-s { left:50%; bottom:0; transform:translateX(-50%); cursor:ns-resize; }
+.handle-s:after { left:9px; bottom:0; }
+.handle-w { left:0; top:50%; transform:translateY(-50%); cursor:ew-resize; }
+.handle-w:after { left:0; top:9px; }
+.handle-e { right:0; top:50%; transform:translateY(-50%); cursor:ew-resize; }
+.handle-e:after { right:0; top:9px; }
 .image-editor-crop-grid {
   position:absolute; inset:0; pointer-events:none;
   background-image:linear-gradient(to right,transparent 33.15%,rgba(255,255,255,.8) 33.33%,transparent 33.5%,transparent 66.48%,rgba(255,255,255,.8) 66.66%,transparent 66.84%),linear-gradient(to bottom,transparent 33.15%,rgba(255,255,255,.8) 33.33%,transparent 33.5%,transparent 66.48%,rgba(255,255,255,.8) 66.66%,transparent 66.84%);
