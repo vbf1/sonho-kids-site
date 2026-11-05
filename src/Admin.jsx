@@ -300,20 +300,21 @@ export default function Admin() {
       setCropRect({ ...original, x: Math.max(0, Math.min(100 - original.w, original.x + dx)), y: Math.max(0, Math.min(100 - original.h, original.y + dy)) });
       return;
     }
-    const aspect = original.w / original.h;
+    const aspect = (original.w * gesture.width) / Math.max(1, original.h * gesture.height);
+    const heightPerWidth = gesture.width / (Math.max(1, gesture.height) * aspect);
     const right = original.x + original.w, bottom = original.y + original.h;
     let w = original.w, h = original.h, x = original.x, y = original.y;
     if (gesture.handle.includes('e')) w = Math.max(8, Math.min(100 - original.x, original.w + dx));
     if (gesture.handle.includes('w')) { w = Math.max(8, Math.min(right, original.w - dx)); x = right - w; }
     if (gesture.handle.includes('s')) h = Math.max(8, Math.min(100 - original.y, original.h + dy));
     if (gesture.handle.includes('n')) { h = Math.max(8, Math.min(bottom, original.h - dy)); y = bottom - h; }
-    if (Math.abs(dx) >= Math.abs(dy)) h = w / aspect; else w = h * aspect;
+    if (Math.abs(dx * gesture.width) >= Math.abs(dy * gesture.height)) h = w * heightPerWidth; else w = h / heightPerWidth;
     if (gesture.handle.includes('w')) x = right - w;
     if (gesture.handle.includes('n')) y = bottom - h;
-    if (x < 0) { w += x; x = 0; h = w / aspect; if (gesture.handle.includes('n')) y = bottom - h; }
-    if (y < 0) { h += y; y = 0; w = h * aspect; if (gesture.handle.includes('w')) x = right - w; }
-    if (x + w > 100) { w = 100 - x; h = w / aspect; if (gesture.handle.includes('n')) y = bottom - h; }
-    if (y + h > 100) { h = 100 - y; w = h * aspect; if (gesture.handle.includes('w')) x = right - w; }
+    if (x < 0) { w += x; x = 0; h = w * heightPerWidth; if (gesture.handle.includes('n')) y = bottom - h; }
+    if (y < 0) { h += y; y = 0; w = h / heightPerWidth; if (gesture.handle.includes('w')) x = right - w; }
+    if (x + w > 100) { w = 100 - x; h = w * heightPerWidth; if (gesture.handle.includes('n')) y = bottom - h; }
+    if (y + h > 100) { h = 100 - y; w = h / heightPerWidth; if (gesture.handle.includes('w')) x = right - w; }
     setCropRect({ x: Math.max(0, x), y: Math.max(0, y), w: Math.max(1, w), h: Math.max(1, h) });
   };
   const handleCropPointerEnd = () => { cropGesture.current = null; };
