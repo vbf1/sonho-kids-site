@@ -253,7 +253,7 @@ export default function Admin() {
     }
     setEditingImage({ file, target, index, preview: URL.createObjectURL(file) });
     setPreviewSize(null); setCropDrag(null);
-    setEditSettings({ rotation: 0, brightness: 100, contrast: 100, saturation: 100, ratio: 'original', cropX: 50, cropY: 50, zoom: 1 });
+    setEditSettings({ rotation: 0, brightness: 100, contrast: 100, saturation: 100, ratio: '1:1', cropX: 50, cropY: 50, zoom: 1 });
   };
   const startExistingImageEditing = async (item) => {
     setBusy(true); setError(''); setNotice('');
@@ -325,7 +325,7 @@ export default function Admin() {
     if (!editingImage) return;
     setBusy(true); setError('');
     try {
-      const editedFile = await createEditedImageFile(editingImage.file, editSettings);
+      const editedFile = await createEditedImageFile(editingImage.file, { ...editSettings, cropRect });
       const preview = URL.createObjectURL(editedFile);
       if (editingImage.target === 'hero') {
         setHeroFile(editedFile); setHeroPreview(preview);
