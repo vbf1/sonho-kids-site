@@ -904,6 +904,11 @@
 .image-edit-list { display:grid; gap:8px; }
 .image-edit-file { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:9px 11px; border:1px solid #ece7f4; border-radius:11px; background:#fff; }
 .image-edit-file > span { min-width:0; overflow-wrap:anywhere; color:#68627a; font-size:11px; font-weight:700; }
+.image-edit-file-actions { display:flex; align-items:center; gap:7px; flex:0 0 auto; }
+.selected-file-remove { display:inline-flex; align-items:center; justify-content:center; width:36px; height:36px; padding:0; border:1px solid #f1cbd0; border-radius:10px; background:#fff5f5; color:#c43f50; cursor:pointer; }
+.selected-file-remove:hover { background:#ffe8eb; border-color:#e9aab3; }
+.selected-file-remove:focus-visible { outline:3px solid rgba(196,63,80,.22); outline-offset:2px; }
+@media (max-width:480px) { .image-edit-file { align-items:flex-start; } .image-edit-file-actions { gap:5px; } .selected-file-remove { width:36px; height:36px; } }
 .image-edit-trigger { display:inline-flex; align-items:center; justify-content:center; gap:7px; min-height:36px; padding:8px 12px; border:1px solid #ded4f0; border-radius:10px; background:#f7f3ff; color:#654b9c; font:800 11px 'Nunito',sans-serif; cursor:pointer; white-space:nowrap; transition:background .18s,transform .18s; }
 .image-edit-trigger:hover { background:#eee7fb; transform:translateY(-1px); }
 .image-editor-backdrop { position:fixed; inset:0; z-index:11000; display:grid; place-items:center; padding:16px; overflow-y:auto; background:rgba(25,19,43,.72); backdrop-filter:blur(9px); -webkit-backdrop-filter:blur(9px); }
