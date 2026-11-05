@@ -754,3 +754,27 @@
   .admin-logout { padding: 7px; font-size: 11px; }
   .admin-image-card { grid-template-columns: 100px minmax(0, 1fr); }
 }
+
+
+/* Logo do cabeçalho do painel com maior destaque e grupos de textos em ordem do site */
+.admin-top-brand img {
+  width: 190px;
+  height: 72px;
+}
+.site-settings-form { display: flex; flex-direction: column; gap: 22px; }
+.site-settings-group { display: flex; flex-direction: column; gap: 12px; }
+.site-settings-group h3 {
+  margin: 0;
+  padding-bottom: 9px;
+  border-bottom: 1px solid #eeeaf5;
+  color: #51417e;
+  font-size: 16px;
+  font-weight: 800;
+}
+@media (max-width: 560px) {
+  .admin-top-brand img { width: 156px; height: 60px; }
+  .site-settings-form { gap: 19px; }
+}
+@media (max-width: 380px) {
+  .admin-top-brand img { width: 140px; height: 54px; }
+}
