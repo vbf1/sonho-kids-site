@@ -778,3 +778,69 @@
 @media (max-width: 380px) {
   .admin-top-brand img { width: 140px; height: 54px; }
 }
+
+
+/* Navegação e identificação visual das áreas do painel */
+.admin-workflow {
+  display: grid;
+  gap: 11px;
+  padding: 18px 20px;
+  border: 1px solid #e8e2f3;
+  border-radius: 16px;
+  background: #f8f6fc;
+}
+.admin-workflow > strong { color: #40385f; font-size: 14px; }
+.admin-workflow > div { display: flex; flex-wrap: wrap; gap: 8px; }
+.admin-workflow a {
+  display: inline-flex; align-items: center; min-height: 36px; padding: 7px 12px;
+  border: 1px solid #e4dcef; border-radius: 9px; background: #fff;
+  color: #65518f; font-size: 12px; font-weight: 800; text-decoration: none;
+}
+.admin-workflow a:hover { border-color: #9b83d0; background: #f3effb; }
+.admin-workflow > small { color: #858198; font-size: 11px; line-height: 1.5; }
+.admin-panel[id] { scroll-margin-top: 18px; }
+.photo-manager-guide {
+  display: grid; gap: 7px; margin: -4px 0 20px; padding: 14px 16px;
+  border-radius: 12px; background: #f8f7fb; color: #77738a;
+  font-size: 11px; line-height: 1.5;
+}
+.photo-manager-guide > strong { color: #514477; font-size: 12px; }
+.photo-manager-guide b { color: #5c5278; }
+.photo-category-group { margin-top: 22px; }
+.photo-category-heading {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  margin-bottom: 12px; padding-bottom: 9px; border-bottom: 1px solid #eeeaf5;
+}
+.photo-category-heading h3 { margin: 0; color: #514477; font: 800 15px 'Nunito'; }
+.photo-category-heading span {
+  flex: 0 0 auto; padding: 4px 9px; border-radius: 20px;
+  background: #f1edf8; color: #74638f; font-size: 10px; font-weight: 900;
+}
+.admin-image-fields { gap: 11px; }
+.photo-card-location {
+  display: grid; gap: 3px; padding: 9px 10px; border-radius: 9px;
+  background: #f3effb;
+}
+.photo-card-location span { color: #8a7ba7; font-size: 9px; font-weight: 900; letter-spacing: .7px; }
+.photo-card-location strong { color: #57447f; font-size: 12px; line-height: 1.35; }
+.photo-field-label {
+  display: grid; gap: 6px; color: #69677f; font-size: 11px; font-weight: 900;
+}
+.photo-technical-details {
+  padding: 8px 9px; border: 1px solid #eeeaf4; border-radius: 9px;
+  background: #faf9fc; overflow-wrap: anywhere;
+}
+.photo-technical-details summary {
+  color: #77738a; cursor: pointer; font-size: 10px; font-weight: 800;
+}
+.photo-technical-details small {
+  display: block; margin-top: 6px; color: #9995a8; font-size: 9px; line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 560px) {
+  .admin-workflow { padding: 14px; }
+  .admin-workflow > div { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .admin-workflow a { justify-content: center; text-align: center; font-size: 11px; }
+  .photo-manager-guide { padding: 12px; }
+  .photo-category-heading h3 { font-size: 14px; }
+}
