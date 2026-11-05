@@ -104,7 +104,7 @@ function App() {
   const heroImage = images.find((image) => image.category === 'hero');
   const eventImages = images.filter((image) => image.category === 'eventos');
   const galleryItems = eventImages.length
-    ? eventImages.map((image) => ({ image, title: image.title || 'Evento Sonho Kids', text: 'Nossos brinquedos e máquinas em momentos especiais.' }))
+    ? eventImages.map((image) => ({ image }))
     : moments.map((moment) => ({ ...moment, image: null }));
   if (selectedToy) {
     const productImages = images.filter((image) => image.category === selectedToy.imageCategory);
@@ -215,7 +215,7 @@ function App() {
 
       <section className="events-section" id="eventos">
         <div className="section-heading"><div className="eyebrow">A ALEGRIA ACONTECE DE VERDADE</div><h2>Momentos especiais com a <span>Sonho Kids</span></h2><p>Veja mais registros dos nossos brinquedos e máquinas em ação nas comemorações.</p></div>
-        <div className="moments-grid">{galleryItems.map((item, i) => <button type="button" className={`moment-card moment-${(i % 3) + 1}`} onClick={() => item.image ? setPreviewPhoto({ src: mediaUrl(item.image.path), title: item.title }) : window.open(instagram, '_blank', 'noopener,noreferrer')} key={item.image?.id || item.title}><div className="moment-art">{item.image ? <img className="real-site-photo" src={mediaUrl(item.image.path)} alt={item.title} loading="lazy" decoding="async"/> : <span>{item.emoji}</span>}<small>SONHO KIDS • EVENTOS</small></div><div className="moment-info"><h3>{item.title}</h3><p>{item.text}</p><span>{item.image ? 'Ampliar foto' : 'Ver no Instagram'} <ArrowUpRight size={15}/></span></div></button>)}</div>
+        <div className="moments-grid">{galleryItems.map((item, i) => <div className={`moment-card moment-${(i % 3) + 1}`} key={item.image?.id || item.title || i}><div className="moment-art">{item.image ? <img className="real-site-photo" src={mediaUrl(item.image.path)} alt="Foto de demonstração de evento da Sonho Kids" loading="lazy" decoding="async"/> : <span>{item.emoji}</span>}<small>SONHO KIDS • EVENTOS</small></div></div>)}</div>
         <div className="instagram-note"><Instagram/><p>Quer ver mais fotos dos nossos eventos?</p><a href={instagram} target="_blank" rel="noreferrer">Acompanhe nosso Instagram <ArrowUpRight size={16}/></a></div>
       </section>
 
