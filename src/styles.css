@@ -952,3 +952,8 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible {
   outline-color: var(--yellow);
 }
+
+
+/* Garante contraste do título na seção escura Sobre a Sonho Kids. */
+.about-section .about-copy h2 { color: #fff; }
+.about-section .about-copy h2 span { color: var(--pink); }
