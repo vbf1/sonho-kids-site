@@ -1041,3 +1041,14 @@
   .admin-custom-select-option { min-height:58px; padding:9px; }
 }
 @media(prefers-reduced-motion:reduce) { .admin-custom-select-backdrop,.admin-custom-select-modal { animation:none; } }
+
+
+/* Controles de recorte manual e edição de fotos já publicadas */
+.image-editor-crop-controls { display:grid; gap:11px; grid-column:1/-1; padding:14px; border:1px solid #e8e1f1; border-radius:13px; background:#f8f6fc; }
+.image-editor-crop-controls > strong { color:#514477; font:900 12px 'Nunito',sans-serif; }
+.image-editor-crop-controls label { display:grid; gap:6px; }
+.image-editor-crop-controls label > span { display:flex; justify-content:space-between; gap:8px; color:#6d657e; font-size:10px; font-weight:800; }
+.image-editor-crop-controls b { color:#7153aa; }
+.image-editor-crop-controls input { width:100%; accent-color:#7957b7; }
+.image-editor-crop-controls small { color:#898398; font-size:10px; line-height:1.5; }
+.photo-edit-published { width:100%; min-height:39px; }
