@@ -115,6 +115,9 @@
   align-content: center; text-align: center;
 }
 .admin-file-drop span { width: 100%; font-size: 11px; color: #999; }
+.admin-file-drop { font: 900 13px 'Nunito', sans-serif; }
+.admin-file-drop:disabled { opacity: .55; cursor: wait; }
+.admin-file-input-hidden { position: fixed !important; left: -10000px !important; top: 0 !important; width: 1px !important; height: 1px !important; opacity: 0 !important; pointer-events: none !important; }
 .upload-submit { margin-top: 16px; }
 .admin-hint { display: block; margin-top: 12px; }
 .selected-files { display: flex; gap: 7px; flex-wrap: wrap; margin-top: 12px; }
