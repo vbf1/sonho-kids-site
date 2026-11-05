@@ -252,7 +252,7 @@ export default function Admin() {
       return;
     }
     setEditingImage({ file, target, index, preview: URL.createObjectURL(file) });
-    setPreviewSize(null); setCropDrag(null);
+    setPreviewSize(null); cropGesture.current = null;
     setEditSettings({ rotation: 0, brightness: 100, contrast: 100, saturation: 100, ratio: '1:1', cropX: 50, cropY: 50, zoom: 1 });
   };
   const startExistingImageEditing = async (item) => {
