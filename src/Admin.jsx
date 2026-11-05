@@ -22,6 +22,7 @@ const defaultSettings = {
   "contact_title": "O próximo sorriso pode ser da sua festa!",
   "contact_description": "Conheça nossos produtos e acompanhe as novidades da Sonho Kids.",
   "footer_text": "Levando diversão e criando memórias felizes. 💛",
+  "catalog_display_mode": "inline",
   "toy_1_name": "Cama elástica",
   "toy_1_detail": "Pulos, energia e muita diversão para a criançada.",
   "toy_2_name": "Piscina de bolinhas",
@@ -266,6 +267,21 @@ export default function Admin() {
   <section className="admin-panel"><div className="admin-panel-title"><div className="admin-icon"><Settings2/></div><div><h2>Informações e contatos do site</h2><p>Edite telefone, redes sociais, textos da página inicial e informações dos produtos. Salve para publicar no site.</p></div></div><form className="site-settings-form" onSubmit={saveSiteSettings}><div className="site-settings-grid">{editableFields.map(([key,label])=><label className={['whatsapp_message','hero_description','about_title','about_description','contact_title','contact_description','footer_text'].includes(key) || key.endsWith('_detail') ? 'site-setting-field wide' : 'site-setting-field'} key={key}><span>{label}</span>{['whatsapp_message','hero_description','about_title','about_description','contact_title','contact_description','footer_text'].includes(key) || key.endsWith('_detail') ? <textarea rows="3" value={siteSettings[key] ?? ''} onChange={(e)=>setSiteSettings((current)=>({...current,[key]:e.target.value}))}/> : <input value={siteSettings[key] ?? ''} onChange={(e)=>setSiteSettings((current)=>({...current,[key]:e.target.value}))}/>}</label>)}</div><button className="admin-primary" type="submit" disabled={busy}><Save size={16}/>{busy ? 'Salvando...' : 'Salvar todas as informações'}</button></form></section>
   <section className="admin-panel catalog-manager">
     <div className="admin-panel-title"><div className="admin-icon"><Images/></div><div><h2>Brinquedos e máquinas do site</h2><p>Cadastre novos produtos, altere nomes e descrições e escolha quais aparecem na vitrine. Produtos desativados ficam ocultos, mas suas fotos são preservadas.</p></div></div>
+    <div className="catalog-display-setting">
+      <h3>Como os produtos serão exibidos no site?</h3>
+      <p>Você pode mostrar os brinquedos na página inicial ou reunir todos em uma página exclusiva de catálogo.</p>
+      <div className="catalog-display-options">
+        <label className={siteSettings.catalog_display_mode !== 'catalog' ? 'is-selected' : ''}>
+          <input type="radio" name="catalog_display_mode" value="inline" checked={siteSettings.catalog_display_mode !== 'catalog'} onChange={() => setSiteSettings((current) => ({ ...current, catalog_display_mode: 'inline' }))}/>
+          <span><strong>Na página inicial</strong><small>Os produtos aparecem um abaixo do outro, como atualmente.</small></span>
+        </label>
+        <label className={siteSettings.catalog_display_mode === 'catalog' ? 'is-selected' : ''}>
+          <input type="radio" name="catalog_display_mode" value="catalog" checked={siteSettings.catalog_display_mode === 'catalog'} onChange={() => setSiteSettings((current) => ({ ...current, catalog_display_mode: 'catalog' }))}/>
+          <span><strong>Em uma página Catálogo</strong><small>A página inicial terá um convite para o cliente abrir o catálogo completo.</small></span>
+        </label>
+      </div>
+      <small className="catalog-display-hint">A escolha será publicada junto com o botão “Salvar brinquedos e máquinas”.</small>
+    </div>
     <div className="catalog-add-row">
       <input aria-label="Nome do novo produto" placeholder="Nome do novo brinquedo ou máquina" value={newItemName} onChange={(e)=>setNewItemName(e.target.value)}/>
       <select aria-label="Tipo do novo produto" value={newItemKind} onChange={(e)=>setNewItemKind(e.target.value)}><option value="BRINQUEDO">Brinquedo</option><option value="MÁQUINA">Máquina</option></select>
