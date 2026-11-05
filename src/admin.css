@@ -1052,3 +1052,24 @@
 .image-editor-crop-controls input { width:100%; accent-color:#7957b7; }
 .image-editor-crop-controls small { color:#898398; font-size:10px; line-height:1.5; }
 .photo-edit-published { width:100%; min-height:39px; }
+
+
+/* Recorte direto por toque ou mouse no próprio enquadramento */
+.image-editor-preview-wrap { display:grid; gap:7px; margin-bottom:2px; }
+.image-editor-preview {
+  position:relative; display:block; width:100%; max-height:310px; min-height:170px;
+  overflow:hidden; padding:0; touch-action:none; cursor:grab; user-select:none;
+  background:#24202d; border:1px solid #dcd3e9;
+}
+.image-editor-preview:active { cursor:grabbing; }
+.image-editor-preview img {
+  position:absolute; inset:0; display:block; width:100%; height:100%;
+  max-width:none; max-height:none; object-fit:cover; transition:none;
+  pointer-events:none; user-select:none;
+}
+.image-editor-crop-grid {
+  position:absolute; inset:0; pointer-events:none;
+  background-image:linear-gradient(to right,transparent 33.15%,rgba(255,255,255,.8) 33.33%,transparent 33.5%,transparent 66.48%,rgba(255,255,255,.8) 66.66%,transparent 66.84%),linear-gradient(to bottom,transparent 33.15%,rgba(255,255,255,.8) 33.33%,transparent 33.5%,transparent 66.48%,rgba(255,255,255,.8) 66.66%,transparent 66.84%);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.9);
+}
+.image-editor-drag-hint { display:block; color:#7153aa; text-align:center; font-size:10px; font-weight:800; }
