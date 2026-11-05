@@ -20,6 +20,7 @@ const defaultContent = {
   "contact_title": "O próximo sorriso pode ser da sua festa!",
   "contact_description": "Conheça nossos produtos e acompanhe as novidades da Sonho Kids.",
   "footer_text": "Levando diversão e criando memórias felizes. 💛",
+  "catalog_display_mode": "inline",
   "toy_1_name": "Cama elástica",
   "toy_1_detail": "Pulos, energia e muita diversão para a criançada.",
   "toy_2_name": "Piscina de bolinhas",
@@ -94,7 +95,10 @@ function App() {
   const configuredToys = (Array.isArray(savedCatalog) ? savedCatalog : toys.map((toy, index) => ({ ...toy, id: toy.imageCategory, active: true, name: settingValue(content, `toy_${index + 1}_name`), detail: settingValue(content, `toy_${index + 1}_detail`) })))
     .filter((toy) => toy.active !== false)
     .map((toy) => ({ ...toy, imageCategory: toy.id || toy.imageCategory, visualLabel: toy.visualLabel || 'DIVERSÃO PARA SUA FESTA', emoji: toy.emoji || '🎈', color: toy.color || 'pink' }));
-  const selectedToy = configuredToys.find((toy) => toy.imageCategory === new URLSearchParams(window.location.search).get('produto'));
+  const queryParams = new URLSearchParams(window.location.search);
+  const selectedToy = configuredToys.find((toy) => toy.imageCategory === queryParams.get('produto'));
+  const catalogMode = content.catalog_display_mode === 'catalog';
+  const catalogPage = queryParams.get('catalogo') === '1';
   const whatsapp = whatsappLink(content);
   const instagram = settingValue(content, 'instagram_url');
   const heroImage = images.find((image) => image.category === 'hero');
@@ -116,6 +120,26 @@ function App() {
       {showScrollTop && <button className="scroll-top-float" type="button" aria-label="Voltar ao topo" title="Voltar ao topo" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}><ArrowUp size={23}/></button>}
     </div>;
   }
+  if (catalogPage) {
+    return <div className="catalog-page">
+      <header className="product-page-header"><Brand logoUrl={logoReady ? logoUrl : ''} loading={!logoReady}/><a className="product-back-link" href={window.location.pathname}>← Voltar ao início</a></header>
+      <main className="catalog-page-main">
+        <section className="section toys-section catalog-page-section">
+          <div className="section-heading"><div className="eyebrow">SONHO KIDS BRINQUEDOS</div><h1>Nosso <span>catálogo</span></h1><p>Conheça todos os brinquedos e máquinas disponíveis para deixar sua comemoração ainda mais especial.</p></div>
+          <div className="toy-grid">{configuredToys.map((toy) => {
+            const toyImage = images.find((image) => image.category === toy.imageCategory);
+            return <a className={`toy-card ${toy.color}`} key={toy.imageCategory} href={`?produto=${encodeURIComponent(toy.imageCategory)}`} aria-label={`Ver fotos de ${toy.name}`}>
+              <div className="toy-art">{toyImage ? <img className="real-site-photo" src={mediaUrl(toyImage.path)} alt={toy.name} loading="lazy" decoding="async"/> : <div className="toy-placeholder"><span className="toy-placeholder-glow"/><span className="toy-emoji">{toy.emoji}</span><small>IMAGEM EM BREVE</small></div>}<span className="toy-art-caption">{toy.visualLabel}</span><span className="toy-spark">✦</span></div>
+              <div className="toy-info"><span className="toy-kind">{toy.kind}</span><h3>{toy.name}</h3><p>{toy.detail}</p><span className="toy-card-cta">Ver fotos do produto <ArrowUpRight size={16}/></span></div>
+            </a>;
+          })}</div>
+          {!configuredToys.length && <div className="product-gallery-empty"><span>🎈</span><h2>Catálogo em atualização</h2><p>Em breve teremos novidades por aqui.</p></div>}
+        </section>
+      </main>
+      <footer className="site-footer product-page-footer"><Brand footer logoUrl={logoReady ? logoUrl : ''} loading={!logoReady}/><p>{settingValue(content, 'footer_text')}</p><div className="footer-social"><a href={instagram} aria-label="Instagram" target="_blank" rel="noreferrer"><Instagram/></a></div><small>© {new Date().getFullYear()} Sonho Kids Brinquedos. Todos os direitos reservados.</small></footer>
+      <a className="whatsapp-float" href={whatsappLink(content)} aria-label="Fale conosco pelo WhatsApp" target="_blank" rel="noreferrer"><WhatsAppIcon size={27}/></a>
+    </div>;
+  }
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "Organization",
@@ -135,7 +159,7 @@ function App() {
     <header className="site-header">
       <Brand logoUrl={logoReady ? logoUrl : ''} loading={!logoReady} />
       <nav id="site-navigation" className={mobileMenuOpen ? 'is-open' : ''} aria-label="Navegação principal">
-        <a href="#brinquedos" onClick={() => setMobileMenuOpen(false)}>Brinquedos</a>
+        <a href={catalogMode ? "?catalogo=1" : "#brinquedos"} onClick={() => setMobileMenuOpen(false)}>{catalogMode ? "Catálogo" : "Brinquedos"}</a>
         <a href="#sobre" onClick={() => setMobileMenuOpen(false)}>A Sonho Kids</a>
         <a href="#eventos" onClick={() => setMobileMenuOpen(false)}>Eventos</a>
       </nav>
@@ -149,7 +173,7 @@ function App() {
           <h1>{settingValue(content, 'hero_title')}</h1>
           <p>{settingValue(content, 'hero_description')}</p>
           <div className="hero-actions">
-            <a className="button button-quiet" href="#brinquedos">{settingValue(content, 'hero_button')} <ArrowUpRight size={16}/></a>
+            <a className="button button-quiet" href={catalogMode ? "?catalogo=1" : "#brinquedos"}>{settingValue(content, 'hero_button')} <ArrowUpRight size={16}/></a>
           </div>
           <div className="hero-points"><span><ShieldCheck/> Cuidado em cada detalhe</span><span><Heart/> Diversão com carinho</span></div>
         </div>
@@ -168,6 +192,9 @@ function App() {
 
       <section className="ticker"><span>🎉 Diversão para comemorar</span><i>✦</i><span>🌈 Cores que encantam</span><i>✦</i><span>💛 Atendimento com carinho</span><i>✦</i><span>🎈 Memórias felizes</span></section>
 
+      {catalogMode ? <section className="section catalog-teaser" id="brinquedos">
+        <div className="catalog-teaser-card"><div className="eyebrow">SONHO KIDS BRINQUEDOS</div><h2>Conheça nosso <span>catálogo</span></h2><p>Reunimos nossos brinquedos e máquinas em um só lugar para você escolher a diversão ideal para sua festa.</p><a className="button button-quiet" href="?catalogo=1">Ver catálogo completo <ArrowUpRight size={16}/></a></div>
+      </section> : (
       <section className="section toys-section" id="brinquedos">
         <div className="section-heading"><div className="eyebrow">NOSSO MUNDO DE DIVERSÃO</div><h2>Escolha a alegria da <span>sua festa</span></h2><p>Opções para transformar aniversários, encontros e comemorações em momentos especiais.</p></div>
         <div className="toy-grid">{configuredToys.map((toy) => {
@@ -179,6 +206,7 @@ function App() {
         })}</div>
         <div className="section-bottom"><span><CheckCircle2/> Consulte disponibilidade para sua data</span></div>
       </section>
+      )}
 
       <section className="about-section" id="sobre">
         
