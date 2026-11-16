@@ -336,7 +336,7 @@ export default function Admin() {
       } else if (editingImage.target === 'existing') {
         const item = editingImage.item;
         const path = item.category + '/' + Date.now() + '-' + Math.random().toString(36).slice(2, 7) + '.webp';
-        const { error: uploadError } = await supabase.storage.from('site-media').upload(path, editedFile, { contentType: 'image/webp', cacheControl: '3600' });
+        const { error: uploadError } = await supabase.storage.from('site-media').upload(path, editedFile, { contentType: 'image/webp', cacheControl: '31536000' });
         if (uploadError) throw uploadError;
         const { error: updateError } = await supabase.from('site_images').update({ path }).eq('id', item.id);
         if (updateError) {
@@ -363,7 +363,7 @@ export default function Admin() {
       if (!logoFile.type.startsWith('image/') || logoFile.size > 8 * 1024 * 1024) throw new Error('Escolha uma imagem de até 8 MB.');
       const ext = logoFile.name.split('.').pop().toLowerCase().replace(/[^a-z0-9]/g, '') || 'png';
       const path = 'branding/logo-' + Date.now() + '.' + ext;
-      const { error: uploadError } = await supabase.storage.from('site-media').upload(path, logoFile, { contentType: logoFile.type, cacheControl: '3600' });
+      const { error: uploadError } = await supabase.storage.from('site-media').upload(path, logoFile, { contentType: logoFile.type, cacheControl: '31536000' });
       if (uploadError) throw uploadError;
       const { error: settingError } = await supabase.from('site_settings').upsert({ key: 'logo_path', value: path, updated_at: new Date().toISOString() });
       if (settingError) throw settingError;
@@ -384,7 +384,7 @@ export default function Admin() {
       const file = await prepareImageForUpload(heroFile);
       const ext = file.name.split('.').pop().toLowerCase().replace(/[^a-z0-9]/g, '') || 'jpg';
       const path = 'hero/' + Date.now() + '-' + Math.random().toString(36).slice(2, 7) + '.' + ext;
-      const { error: uploadError } = await supabase.storage.from('site-media').upload(path, file, { contentType: file.type, cacheControl: '3600' });
+      const { error: uploadError } = await supabase.storage.from('site-media').upload(path, file, { contentType: file.type, cacheControl: '31536000' });
       if (uploadError) throw uploadError;
       const { error: rowError } = await supabase.from('site_images').insert({
         category: 'hero',
@@ -415,7 +415,7 @@ export default function Admin() {
         const file = await prepareImageForUpload(originalFile);
         const ext = file.name.split('.').pop().toLowerCase().replace(/[^a-z0-9]/g, '') || 'jpg';
         const path = category + '/' + Date.now() + '-' + Math.random().toString(36).slice(2, 7) + '.' + ext;
-        const { error: uploadError } = await supabase.storage.from('site-media').upload(path, file, { contentType: file.type, cacheControl: '3600' });
+        const { error: uploadError } = await supabase.storage.from('site-media').upload(path, file, { contentType: file.type, cacheControl: '31536000' });
         if (uploadError) throw uploadError;
         const title = originalFile.name.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ');
         const { error: rowError } = await supabase.from('site_images').insert({ category, title, path, sort_order: 0 });
