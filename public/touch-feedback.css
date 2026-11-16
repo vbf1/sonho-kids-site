@@ -22,3 +22,53 @@ textarea,
 }
 
 /* Não altera cores, sombras, transições ou estados hover definidos pelo site. */
+
+
+/* Tela de entrada: o site público só aparece depois dos dados e fotos publicados carregarem. */
+.site-loading-screen {
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 28px;
+  background: #fffdf9;
+  color: #25264b;
+  text-align: center;
+  font-family: Inter, sans-serif;
+}
+.site-loading-brand {
+  font-size: 42px;
+  line-height: 1;
+  margin-bottom: 5px;
+}
+.site-loading-spinner {
+  width: 34px;
+  height: 34px;
+  border: 3px solid #eee8fb;
+  border-top-color: #7253c8;
+  border-radius: 50%;
+  animation: sonho-kids-loading-spin .8s linear infinite;
+}
+.site-loading-screen h1 {
+  margin: 5px 0 0;
+  font-family: Poppins, Inter, sans-serif;
+  font-size: clamp(21px, 5vw, 27px);
+  font-weight: 800;
+  color: #25264b;
+}
+.site-loading-screen p {
+  max-width: 330px;
+  margin: 0;
+  color: #77798e;
+  font-size: 14px;
+  line-height: 1.6;
+}
+@keyframes sonho-kids-loading-spin {
+  to { transform: rotate(360deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .site-loading-spinner { animation-duration: 1.8s; }
+}
