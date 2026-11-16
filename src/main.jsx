@@ -252,6 +252,7 @@ function App() {
         <a href={catalogMode ? "?catalogo=1" : "#brinquedos"} onClick={() => setMobileMenuOpen(false)}>{catalogMode ? "Catálogo" : "Brinquedos"}</a>
         <a href="#sobre" onClick={() => setMobileMenuOpen(false)}>A Sonho Kids</a>
         <a href="#eventos" onClick={() => setMobileMenuOpen(false)}>Eventos</a>
+        <a href="#google" onClick={() => setMobileMenuOpen(false)}>Google</a>
       </nav>
       <button className="mobile-menu-toggle" type="button" aria-label={mobileMenuOpen ? 'Fechar menu' : 'Abrir menu'} aria-expanded={mobileMenuOpen} aria-controls="site-navigation" onClick={() => setMobileMenuOpen((open) => !open)}>{mobileMenuOpen ? <X size={21}/> : <Menu size={21}/>}</button>
     </header>
@@ -318,11 +319,27 @@ function App() {
         </div>
       </section>
 
-      <section className="location-section" id="localizacao">
-        <div className="location-heading">
-          <h2>Sonho Kids Brinquedos</h2>
-          <p>Atendemos BH e região</p>
+      <section className="google-profile-section" id="google">
+        <div className="google-profile-copy">
+          <div className="eyebrow">ENCONTRE A SONHO KIDS</div>
+          <h2>Estamos no <span>Google!</span></h2>
+          <p>Conheça nosso perfil da empresa, veja fotos, confira as informações e leia as avaliações de quem já conhece a Sonho Kids.</p>
+          <a className="google-profile-button" href="https://share.google/xNPHDRZ7yr1iwqNoG" target="_blank" rel="noopener noreferrer">
+            Visitar nossa página no Google <ArrowUpRight size={17}/>
+          </a>
         </div>
+        <a className="google-preview-card" href="https://share.google/xNPHDRZ7yr1iwqNoG" target="_blank" rel="noopener noreferrer" aria-label="Abrir perfil da Sonho Kids Brinquedos no Google">
+          <div className="google-preview-top">
+            <span className="google-g" aria-hidden="true">G</span>
+            <span><strong>Perfil da empresa</strong><small>Visualização do Google</small></span>
+            <ArrowUpRight size={18}/>
+          </div>
+          <div className="google-preview-content">
+            <div className="google-preview-brand">🎈</div>
+            <div><h3>Sonho Kids Brinquedos</h3><p>Locação de brinquedos para festas e eventos</p><span>Veja fotos, avaliações e informações no Google</span></div>
+          </div>
+          <div className="google-preview-footer"><span>Google</span><span>Toque para abrir o perfil ↗</span></div>
+        </a>
       </section>
 
       <section className="contact-section" id="contato"><div className="contact-decoration">🎈</div><div><div className="eyebrow">{settingValue(content, 'contact_eyebrow')}</div><h2>{settingValue(content, 'contact_title')}</h2><p>{settingValue(content, 'contact_description')}</p></div></section>
