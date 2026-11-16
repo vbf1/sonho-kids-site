@@ -175,7 +175,7 @@ function App() {
   }, []);
   if (window.location.pathname.replace(/\/+$/, '').endsWith('/admin') || window.location.hash === '#/admin') return <Admin />;
   if (!siteReady) return <main className="site-loading-screen" role="status" aria-live="polite">
-    <div className="site-loading-brand">🌈</div>
+    <div className="site-loading-brand">{logoUrl ? <img src={logoUrl} alt="Logo Sonho Kids Brinquedos" /> : <span>🌈</span>}</div>
     <div className="site-loading-spinner" aria-hidden="true"/>
     <h1>Preparando a diversão!</h1>
     <p>Estamos carregando as fotos e novidades da Sonho Kids.</p>
