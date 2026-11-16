@@ -31,6 +31,16 @@ const defaultContent = {
   "toy_4_detail": "Um toque doce e especial para seu evento."
 };
 const settingValue = (content, key) => content[key] || defaultContent[key];
+
+const SITE_CACHE_KEY = 'sonho-kids-site-content-v1';
+const readSiteCache = () => {
+  try {
+    const cached = JSON.parse(localStorage.getItem(SITE_CACHE_KEY) || 'null');
+    if (!cached || !Array.isArray(cached.images) || !cached.content) return null;
+    return cached;
+  } catch { return null; }
+};
+
 const whatsappLink = (content) => `https://wa.me/${(settingValue(content, 'whatsapp_phone').match(/\d/g) || []).join('')}?text=${encodeURIComponent(settingValue(content, 'whatsapp_message'))}`;
 
 function applyLogoPalette(imageUrl) {
@@ -115,10 +125,11 @@ function Brand({ footer = false, logoUrl = '', loading = false }) {
 }
 
 function App() {
-  const [images, setImages] = useState([]);
-  const [content, setContent] = useState(defaultContent);
-  const [logoUrl, setLogoUrl] = useState('');
-  const [logoReady, setLogoReady] = useState(false);
+  const initialCache = readSiteCache();
+  const [images, setImages] = useState(() => initialCache?.images || []);
+  const [content, setContent] = useState(() => initialCache?.content || defaultContent);
+  const [logoUrl, setLogoUrl] = useState(() => initialCache?.logoUrl || '');
+  const [logoReady, setLogoReady] = useState(() => Boolean(initialCache));
   const [previewPhoto, setPreviewPhoto] = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
@@ -136,9 +147,18 @@ function App() {
         const settings = settingResult.error
           ? {}
           : Object.fromEntries((settingResult.data || []).map((item) => [item.key, item.value]));
+        const nextContent = { ...defaultContent, ...settings };
+        const nextLogoUrl = settings.logo_path ? mediaUrl(settings.logo_path) : '';
         setImages(publishedImages);
-        setContent({ ...defaultContent, ...settings });
-        if (settings.logo_path) setLogoUrl(mediaUrl(settings.logo_path));
+        setContent(nextContent);
+        setLogoUrl(nextLogoUrl);
+        try {
+          localStorage.setItem(SITE_CACHE_KEY, JSON.stringify({
+            images: publishedImages, content: nextContent, logoUrl: nextLogoUrl, savedAt: Date.now()
+          }));
+        } catch (cacheError) {
+          console.warn('Não foi possível guardar o conteúdo do site em cache:', cacheError);
+        }
       } catch (error) {
         console.error('Não foi possível carregar o conteúdo publicado:', error);
       } finally {
