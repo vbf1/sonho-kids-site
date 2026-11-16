@@ -40,9 +40,22 @@ textarea,
   font-family: Inter, sans-serif;
 }
 .site-loading-brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 150px;
+  height: 150px;
+  margin-bottom: 5px;
+}
+.site-loading-brand img {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+.site-loading-brand span {
   font-size: 42px;
   line-height: 1;
-  margin-bottom: 5px;
 }
 .site-loading-spinner {
   width: 34px;
