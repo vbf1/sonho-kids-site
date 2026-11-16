@@ -122,23 +122,45 @@ function App() {
   const [previewPhoto, setPreviewPhoto] = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [siteReady, setSiteReady] = useState(false);
   useEffect(() => {
     if (window.location.pathname.replace(/\/+$/, '').endsWith('/admin') || window.location.hash === '#/admin') return;
     let active = true;
-    Promise.all([
-      supabase.from('site_images').select('*').order('sort_order').order('created_at', { ascending: false }),
-      supabase.from('site_settings').select('key,value')
-    ]).then(([imageResult, settingResult]) => {
-      if (!active) return;
-      if (!imageResult.error) setImages(imageResult.data || []);
-      if (!settingResult.error) {
-        const settings = Object.fromEntries((settingResult.data || []).map((item) => [item.key, item.value]));
+    const preloadImage = (url) => new Promise((resolve) => {
+      if (!url) return resolve();
+      const image = new Image();
+      image.onload = () => resolve();
+      image.onerror = () => resolve();
+      image.src = url;
+    });
+    const loadPublishedSite = async () => {
+      try {
+        const [imageResult, settingResult] = await Promise.all([
+          supabase.from('site_images').select('*').order('sort_order').order('created_at', { ascending: false }),
+          supabase.from('site_settings').select('key,value')
+        ]);
+        if (!active) return;
+        const publishedImages = imageResult.error ? [] : (imageResult.data || []);
+        const settings = settingResult.error
+          ? {}
+          : Object.fromEntries((settingResult.data || []).map((item) => [item.key, item.value]));
+        const imageUrls = publishedImages.map((item) => mediaUrl(item.path)).filter(Boolean);
+        if (settings.logo_path) imageUrls.push(mediaUrl(settings.logo_path));
+        await Promise.all(imageUrls.map(preloadImage));
+        if (!active) return;
+        setImages(publishedImages);
         setContent({ ...defaultContent, ...settings });
         if (settings.logo_path) setLogoUrl(mediaUrl(settings.logo_path));
+      } catch (error) {
+        console.error('Não foi possível carregar o conteúdo publicado:', error);
+      } finally {
+        if (active) {
+          setLogoReady(true);
+          setSiteReady(true);
+        }
       }
-    }).catch((e) => console.error('Não foi possível carregar as imagens do site:', e)).finally(() => {
-      if (active) setLogoReady(true);
-    });
+    };
+    loadPublishedSite();
     return () => { active = false; };
   }, []);
   useEffect(() => {
@@ -152,6 +174,12 @@ function App() {
     return () => window.removeEventListener('scroll', updateScrollState);
   }, []);
   if (window.location.pathname.replace(/\/+$/, '').endsWith('/admin') || window.location.hash === '#/admin') return <Admin />;
+  if (!siteReady) return <main className="site-loading-screen" role="status" aria-live="polite">
+    <div className="site-loading-brand">🌈</div>
+    <div className="site-loading-spinner" aria-hidden="true"/>
+    <h1>Preparando a diversão!</h1>
+    <p>Estamos carregando as fotos e novidades da Sonho Kids.</p>
+  </main>;
   let savedCatalog = null;
   try { savedCatalog = content.catalog_items ? JSON.parse(content.catalog_items) : null; } catch { savedCatalog = null; }
   const configuredToys = (Array.isArray(savedCatalog) ? savedCatalog : toys.map((toy, index) => ({ ...toy, id: toy.imageCategory, active: true, name: settingValue(content, `toy_${index + 1}_name`), detail: settingValue(content, `toy_${index + 1}_detail`) })))
