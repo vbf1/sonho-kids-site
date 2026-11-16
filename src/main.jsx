@@ -128,7 +128,7 @@ function App() {
     const loadPublishedSite = async () => {
       try {
         const [imageResult, settingResult] = await Promise.all([
-          supabase.from('site_images').select('*').order('sort_order').order('created_at', { ascending: false }),
+          supabase.from('site_images').select('id,path,category,title,sort_order,created_at').order('sort_order').order('created_at', { ascending: false }),
           supabase.from('site_settings').select('key,value')
         ]);
         if (!active) return;
@@ -248,7 +248,7 @@ function App() {
           <div className="hero-points"><span><ShieldCheck/> Cuidado em cada detalhe</span><span><Heart/> Diversão com carinho</span></div>
         </div>
         <div className={heroImage ? "hero-visual hero-visual-photo" : "hero-visual"} aria-label={heroImage ? "Foto principal da Sonho Kids" : "Ilustração colorida de festa infantil"}>
-          {heroImage ? <img className="hero-main-photo" src={mediaUrl(heroImage.path)} alt={heroImage.title || "Brinquedos Sonho Kids em uma festa"}/> : <>
+          {heroImage ? <img className="hero-main-photo" src={mediaUrl(heroImage.path)} alt={heroImage.title || "Brinquedos Sonho Kids em uma festa"} loading="eager" fetchPriority="high" decoding="async"/> : <>
             <div className="hero-orbit orbit-one"/><div className="hero-orbit orbit-two"/>
             <div className="hero-cloud cloud-one">☁️</div><div className="hero-cloud cloud-two">☁️</div>
             <div className="hero-burst">✦</div>
