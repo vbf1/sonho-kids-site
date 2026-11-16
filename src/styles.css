@@ -957,3 +957,82 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 /* Garante contraste do título na seção escura Sobre a Sonho Kids. */
 .about-section .about-copy h2 { color: #fff; }
 .about-section .about-copy h2 span { color: var(--pink); }
+
+
+/* Perfil da empresa no Google: prévia visual com acesso direto ao perfil oficial. */
+.google-profile-section {
+  display: grid;
+  grid-template-columns: minmax(0, .9fr) minmax(320px, 1.1fr);
+  align-items: center;
+  gap: clamp(28px, 5vw, 64px);
+  padding: clamp(52px, 7vw, 88px) clamp(18px, 5vw, 48px);
+  background: linear-gradient(135deg, #f7f4ff 0%, #fffdf9 55%, #fff8e9 100%);
+}
+.google-profile-copy { width: min(100%, 510px); justify-self: end; }
+.google-profile-copy h2 {
+  margin: 9px 0 13px;
+  color: #292747;
+  font: 800 clamp(29px, 4vw, 40px)/1.15 'Poppins', sans-serif;
+}
+.google-profile-copy h2 span { color: #7253c8; }
+.google-profile-copy p {
+  margin: 0;
+  color: #77778b;
+  font-size: 15px;
+  line-height: 1.8;
+}
+.google-profile-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 48px;
+  margin-top: 22px;
+  padding: 0 20px;
+  border-radius: 999px;
+  background: #7253c8;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 900;
+  box-shadow: 0 8px 22px rgba(114,83,200,.2);
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.google-profile-button:hover { transform: translateY(-2px); box-shadow: 0 11px 26px rgba(114,83,200,.27); }
+.google-preview-card {
+  display: block;
+  width: min(100%, 520px);
+  justify-self: start;
+  padding: 22px;
+  border: 1px solid #e9e6ef;
+  border-radius: 22px;
+  background: #fff;
+  color: inherit;
+  box-shadow: 0 18px 50px rgba(41,39,71,.09);
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.google-preview-card:hover { transform: translateY(-3px); box-shadow: 0 22px 55px rgba(41,39,71,.13); }
+.google-preview-top { display: flex; align-items: center; gap: 12px; padding-bottom: 17px; border-bottom: 1px solid #f0eef4; }
+.google-preview-top > span:nth-child(2) { display: flex; flex: 1; flex-direction: column; gap: 2px; }
+.google-preview-top strong { color: #343348; font-size: 13px; }
+.google-preview-top small { color: #858397; font-size: 11px; }
+.google-preview-top > svg { color: #77758a; }
+.google-g { font: 800 30px Arial, sans-serif; background: conic-gradient(from -45deg, #4285f4 0 25%, #34a853 25% 48%, #fbbc05 48% 72%, #ea4335 72% 88%, #4285f4 88%); color: transparent; background-clip: text; -webkit-background-clip: text; }
+.google-preview-content { display: flex; align-items: center; gap: 16px; padding: 22px 0; }
+.google-preview-brand { display: grid; place-items: center; width: 70px; height: 70px; flex: 0 0 70px; border-radius: 17px; background: #fff5cf; font-size: 34px; }
+.google-preview-content h3 { margin: 0 0 5px; color: #292747; font: 800 18px/1.25 'Poppins', sans-serif; }
+.google-preview-content p { margin: 0 0 7px; color: #656477; font-size: 12px; line-height: 1.5; }
+.google-preview-content span { color: #858397; font-size: 11px; line-height: 1.5; }
+.google-preview-footer { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding-top: 14px; border-top: 1px solid #f0eef4; color: #77758a; font-size: 11px; }
+.google-preview-footer span:first-child { font-weight: 900; color: #4285f4; }
+.google-profile-button:focus-visible, .google-preview-card:focus-visible { outline: 3px solid #f2b83e; outline-offset: 4px; }
+@media (max-width: 760px) {
+  .google-profile-section { grid-template-columns: minmax(0,1fr); gap: 26px; }
+  .google-profile-copy, .google-preview-card { width: min(100%, 560px); justify-self: center; }
+}
+@media (max-width: 420px) {
+  .google-preview-card { padding: 17px; border-radius: 18px; }
+  .google-preview-content { gap: 12px; }
+  .google-preview-brand { width: 58px; height: 58px; flex-basis: 58px; font-size: 28px; }
+  .google-preview-content h3 { font-size: 16px; }
+  .google-preview-footer { font-size: 10px; }
+}
