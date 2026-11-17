@@ -133,13 +133,55 @@ const createEditedImageFile = async (file, settings) => {
 
 function AdminSelect({ value, options, onChange, title, description = 'Escolha uma das opções disponíveis.', ariaLabel }) {
   const [open, setOpen] = useState(false);
+  const triggerRef = useRef(null);
+  const modalRef = useRef(null);
   const selected = options.find((option) => option.value === value);
+
+  useEffect(() => {
+    if (!open) return;
+    const trigger = triggerRef.current;
+    const modal = modalRef.current;
+    const closeButton = modal?.querySelector('.admin-custom-select-close');
+    closeButton?.focus();
+
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        setOpen(false);
+        return;
+      }
+      if (event.key !== 'Tab' || !modal) return;
+      const focusable = Array.from(modal.querySelectorAll(
+        'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      ));
+      if (!focusable.length) {
+        event.preventDefault();
+        return;
+      }
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && (document.activeElement === first || !modal.contains(document.activeElement))) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && (document.activeElement === last || !modal.contains(document.activeElement))) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      if (trigger?.isConnected) trigger.focus();
+    };
+  }, [open]);
+
   return <div className="admin-custom-select">
-    <button type="button" className="admin-custom-select-trigger" aria-label={ariaLabel || title} aria-haspopup="dialog" aria-expanded={open} onClick={() => setOpen(true)}>
+    <button ref={triggerRef} type="button" className="admin-custom-select-trigger" aria-label={ariaLabel || title} aria-haspopup="dialog" aria-expanded={open} onClick={() => setOpen(true)}>
       <span><small>SELECIONADO</small><strong>{selected?.label || 'Selecione uma opção'}</strong></span><ChevronDown size={18}/>
     </button>
     {open && <div className="admin-custom-select-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) setOpen(false); }}>
-      <section className="admin-custom-select-modal" role="dialog" aria-modal="true" aria-label={title}>
+      <section ref={modalRef} className="admin-custom-select-modal" role="dialog" aria-modal="true" aria-label={title}>
         <header className="admin-custom-select-header">
           <div className="admin-custom-select-icon"><Settings2 size={21}/></div>
           <button type="button" className="admin-custom-select-close" onClick={() => setOpen(false)} aria-label="Fechar"><X size={19}/></button>
