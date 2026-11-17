@@ -140,6 +140,7 @@ function App() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [budgetForm, setBudgetForm] = useState({ products: [], date: '', time: '', duration: 'A combinar', location: '', eventType: '', name: '' });
+  const [budgetProductsError, setBudgetProductsError] = useState(false);
   useEffect(() => {
     if (window.location.pathname.replace(/\/+$/, '').endsWith('/admin') || window.location.hash === '#/admin') return;
     let active = true;
@@ -150,21 +151,39 @@ function App() {
           supabase.from('site_settings').select('key,value')
         ]);
         if (!active) return;
-        const publishedImages = imageResult.error ? [] : (imageResult.data || []);
-        const settings = settingResult.error
-          ? {}
-          : Object.fromEntries((settingResult.data || []).map((item) => [item.key, item.value]));
-        const nextContent = { ...defaultContent, ...settings };
-        const nextLogoUrl = settings.logo_path ? mediaUrl(settings.logo_path) : '';
-        setImages(publishedImages);
-        setContent(nextContent);
-        setLogoUrl(nextLogoUrl);
-        try {
-          localStorage.setItem(SITE_CACHE_KEY, JSON.stringify({
-            images: publishedImages, content: nextContent, logoUrl: nextLogoUrl, savedAt: Date.now()
-          }));
-        } catch (cacheError) {
-          console.warn('Não foi possível guardar o conteúdo do site em cache:', cacheError);
+        const imagesLoaded = !imageResult.error;
+        const settingsLoaded = !settingResult.error;
+        const publishedImages = imagesLoaded ? (imageResult.data || []) : null;
+        const settings = settingsLoaded
+          ? Object.fromEntries((settingResult.data || []).map((item) => [item.key, item.value]))
+          : null;
+
+        // Uma falha temporária no Supabase não deve apagar o conteúdo já exibido/cacheado.
+        if (imagesLoaded) setImages(publishedImages);
+        if (settingsLoaded) {
+          const nextContent = { ...defaultContent, ...settings };
+          const nextLogoUrl = settings.logo_path ? mediaUrl(settings.logo_path) : '';
+          setContent(nextContent);
+          setLogoUrl(nextLogoUrl);
+        }
+
+        // Só substitui o cache quando as duas consultas terminaram com sucesso.
+        if (imagesLoaded && settingsLoaded) {
+          try {
+            localStorage.setItem(SITE_CACHE_KEY, JSON.stringify({
+              images: publishedImages,
+              content: { ...defaultContent, ...settings },
+              logoUrl: settings.logo_path ? mediaUrl(settings.logo_path) : '',
+              savedAt: Date.now()
+            }));
+          } catch (cacheError) {
+            console.warn('Não foi possível guardar o conteúdo do site em cache:', cacheError);
+          }
+        } else {
+          console.warn('Conteúdo publicado parcialmente indisponível; mantendo os dados já carregados e o cache existente.', {
+            imagesError: imageResult.error || null,
+            settingsError: settingResult.error || null
+          });
         }
       } catch (error) {
         console.error('Não foi possível carregar o conteúdo publicado:', error);
@@ -235,7 +254,11 @@ function App() {
   const submitBudgetRequest = (event) => {
     event.preventDefault();
     const selectedNames = configuredToys.filter((toy) => budgetForm.products.includes(toy.imageCategory)).map((toy) => toy.name);
-    if (!selectedNames.length) return;
+    if (!selectedNames.length) {
+      setBudgetProductsError(true);
+      return;
+    }
+    setBudgetProductsError(false);
     const formattedDate = new Date(budgetForm.date + 'T12:00:00').toLocaleDateString('pt-BR');
     const message = [
       'Olá! Gostaria de solicitar um orçamento com a Sonho Kids Brinquedos.',
@@ -417,10 +440,14 @@ function App() {
             <legend>O que você gostaria de alugar? <span>*</span></legend>
             <div className="budget-product-options">
               {configuredToys.map((toy) => <label className="budget-product-option" key={toy.imageCategory}>
-                <input type="checkbox" checked={budgetForm.products.includes(toy.imageCategory)} onChange={(event) => updateBudgetField("products", event.target.checked ? [...budgetForm.products, toy.imageCategory] : budgetForm.products.filter((item) => item !== toy.imageCategory))}/>
+                <input type="checkbox" checked={budgetForm.products.includes(toy.imageCategory)} onChange={(event) => {
+                  updateBudgetField("products", event.target.checked ? [...budgetForm.products, toy.imageCategory] : budgetForm.products.filter((item) => item !== toy.imageCategory));
+                  if (event.target.checked) setBudgetProductsError(false);
+                }}/>
                 <span>{toy.emoji || "🎈"}</span><b>{toy.name}</b>
               </label>)}
             </div>
+            {budgetProductsError && <p className="budget-products-error" role="alert">Selecione pelo menos um brinquedo ou máquina para continuar.</p>}
           </fieldset>
           <div className="budget-fields">
             <label>Data do evento <span>*</span><input type="date" min={minEventDate} required value={budgetForm.date} onChange={(event) => updateBudgetField("date", event.target.value)}/></label>
@@ -431,7 +458,7 @@ function App() {
             <label>Seu nome<input type="text" maxLength={80} placeholder="Como podemos chamar você?" value={budgetForm.name} onChange={(event) => updateBudgetField("name", event.target.value)}/></label>
           </div>
           <p className="budget-privacy-note">Seus dados serão usados apenas para montar a mensagem do seu pedido. O envio acontece quando você tocar no botão abaixo.</p>
-          <button className="budget-submit" type="submit" disabled={!budgetForm.products.length || !budgetForm.date || !budgetForm.location.trim()}><WhatsAppIcon size={20}/> Enviar pedido pelo WhatsApp</button>
+          <button className="budget-submit" type="submit" disabled={!budgetForm.date || !budgetForm.location.trim()}><WhatsAppIcon size={20}/> Enviar pedido pelo WhatsApp</button>
         </form>
       </section>
     </main>
