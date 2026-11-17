@@ -33,6 +33,7 @@ const defaultContent = {
 const settingValue = (content, key) => content[key] || defaultContent[key];
 
 const SITE_CACHE_KEY = 'sonho-kids-site-content-v1';
+const BRAND_IMAGE_PATH = '/sonho-kids-identidade.webp';
 const readSiteCache = () => {
   try {
     const cached = JSON.parse(localStorage.getItem(SITE_CACHE_KEY) || 'null');
@@ -118,9 +119,9 @@ const moments = [
   { emoji: '💛', title: 'Sorrisos de verdade', text: 'A alegria acontecendo em eventos reais.' },
 ];
 
-function Brand({ footer = false, logoUrl = '', loading = false }) {
+function Brand({ footer = false }) {
   return <a className={`brand ${footer ? 'brand-footer' : ''}`} href="#inicio" aria-label="Sonho Kids Brinquedos - início">
-    {logoUrl ? <img className="brand-logo" src={logoUrl} alt="Logo Sonho Kids"/> : loading ? <span className="brand-logo-loading" aria-hidden="true"/> : <span className="brand-rainbow" aria-hidden="true">🌈</span>}
+    <img className="brand-logo" src={BRAND_IMAGE_PATH} alt="Logo Sonho Kids Brinquedos" width="58" height="58" fetchPriority="high" decoding="async" />
   </a>;
 }
 
@@ -195,8 +196,8 @@ function App() {
     return () => document.removeEventListener('keydown', handleDialogKeyDown);
   }, [previewPhoto]);
   useEffect(() => {
-    if (logoUrl) applyLogoPalette(logoUrl);
-  }, [logoUrl]);
+    applyLogoPalette(BRAND_IMAGE_PATH);
+  }, []);
   useEffect(() => {
     if (window.location.pathname.replace(/\/+$/, '').endsWith('/admin') || window.location.hash === '#/admin') return;
     const updateScrollState = () => setShowScrollTop(window.scrollY > 320);
@@ -254,7 +255,7 @@ function App() {
     window.location.href = 'https://wa.me/' + phone + '?text=' + encodeURIComponent(message);
   };
   const instagram = settingValue(content, 'instagram_url');
-  const heroImage = images.find((image) => image.category === 'hero');
+  const heroImage = { path: BRAND_IMAGE_PATH, title: 'Identidade visual Sonho Kids Brinquedos' };
   const eventImages = images.filter((image) => image.category === 'eventos');
   const galleryItems = eventImages.length
     ? eventImages.map((image) => ({ image }))
@@ -332,7 +333,7 @@ function App() {
           <div className="hero-points"><span><ShieldCheck/> Cuidado em cada detalhe</span><span><Heart/> Diversão com carinho</span></div>
         </div>
         <div className={heroImage ? "hero-visual hero-visual-photo" : "hero-visual"} aria-label={heroImage ? "Foto principal da Sonho Kids" : "Ilustração colorida de festa infantil"}>
-          {heroImage ? <img className="hero-main-photo" src={mediaUrl(heroImage.path)} alt={heroImage.title || "Brinquedos Sonho Kids em uma festa"} loading="eager" fetchPriority="high" decoding="async"/> : <>
+          {heroImage ? <img className="hero-main-photo" src={BRAND_IMAGE_PATH} alt={heroImage.title} loading="eager" fetchPriority="high" decoding="async"/> : <>
             <div className="hero-orbit orbit-one"/><div className="hero-orbit orbit-two"/>
             <div className="hero-cloud cloud-one">☁️</div><div className="hero-cloud cloud-two">☁️</div>
             <div className="hero-burst">✦</div>
