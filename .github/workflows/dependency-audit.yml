@@ -25,11 +25,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Generate temporary lockfile
-        run: npm install --package-lock-only --ignore-scripts
       - name: Check dependencies for high or critical vulnerabilities
         run: npm audit --audit-level=high
       - name: Install dependencies
-        run: npm install
+        run: npm ci
       - name: Verify production build
         run: npm run build
