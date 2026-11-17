@@ -218,7 +218,7 @@ function App() {
           <div className="toy-grid">{configuredToys.map((toy, toyIndex) => {
             const toyImage = images.find((image) => image.category === toy.imageCategory);
             return <a className={`toy-card ${toy.color}`} key={toy.imageCategory} href={`?produto=${encodeURIComponent(toy.imageCategory)}`} aria-label={`Ver fotos de ${toy.name}`}>
-              <div className="toy-art">{toyImage ? <img className="real-site-photo" src={mediaUrl(toyImage.path)} alt={toy.name} loading={toyIndex === 0 ? "eager" : "lazy"} fetchPriority={toyIndex === 0 ? "high" : "auto"} decoding="async"/> : <div className="toy-placeholder"><span className="toy-placeholder-glow"/><span className="toy-emoji">{toy.emoji}</span><small>IMAGEM EM BREVE</small></div>}<span className="toy-art-caption">{toy.visualLabel}</span><span className="toy-spark">✦</span></div>
+              <div className="toy-art">{toyImage ? <img className="real-site-photo" src={mediaUrl(toyImage.path)} alt={toy.name} loading="lazy" decoding="async"/> : <div className="toy-placeholder"><span className="toy-placeholder-glow"/><span className="toy-emoji">{toy.emoji}</span><small>IMAGEM EM BREVE</small></div>}<span className="toy-art-caption">{toy.visualLabel}</span><span className="toy-spark">✦</span></div>
               <div className="toy-info"><span className="toy-kind">{toy.kind}</span><h3>{toy.name}</h3><p>{toy.detail}</p><span className="toy-card-cta">Ver fotos do produto <ArrowUpRight size={16}/></span></div>
             </a>;
           })}</div>
@@ -290,7 +290,7 @@ function App() {
         <div className="toy-grid">{configuredToys.map((toy, toyIndex) => {
           const toyImage = images.find((image) => image.category === toy.imageCategory);
           return <a className={`toy-card ${toy.color}`} key={toy.imageCategory} href={`?produto=${encodeURIComponent(toy.imageCategory)}`} target="_blank" rel="noreferrer" aria-label={`Ver fotos de ${toy.name} em uma nova aba`}>
-            <div className="toy-art">{toyImage ? <img className="real-site-photo" src={mediaUrl(toyImage.path)} alt={toy.name} loading={toyIndex === 0 ? "eager" : "lazy"} fetchPriority={toyIndex === 0 ? "high" : "auto"} decoding="async"/> : <div className="toy-placeholder"><span className="toy-placeholder-glow"/><span className="toy-emoji">{toy.emoji}</span><small>IMAGEM EM BREVE</small></div>}<span className="toy-art-caption">{toy.visualLabel}</span><span className="toy-spark">✦</span></div>
+            <div className="toy-art">{toyImage ? <img className="real-site-photo" src={mediaUrl(toyImage.path)} alt={toy.name} loading="lazy" decoding="async"/> : <div className="toy-placeholder"><span className="toy-placeholder-glow"/><span className="toy-emoji">{toy.emoji}</span><small>IMAGEM EM BREVE</small></div>}<span className="toy-art-caption">{toy.visualLabel}</span><span className="toy-spark">✦</span></div>
             <div className="toy-info"><span className="toy-kind">{toy.kind}</span><h3>{toy.name}</h3><p>{toy.detail}</p><span className="toy-card-cta">Ver fotos do produto <ArrowUpRight size={16}/></span></div>
           </a>;
         })}</div>
@@ -305,7 +305,7 @@ function App() {
 
       <section className="events-section" id="eventos">
         <div className="section-heading"><div className="eyebrow">A ALEGRIA ACONTECE DE VERDADE</div><h2>Momentos especiais com a <span>Sonho Kids</span></h2><p>Veja mais registros dos nossos brinquedos e máquinas em ação nas comemorações.</p></div>
-        <div className="moments-grid">{galleryItems.map((item, i) => <div className={`moment-card moment-${(i % 3) + 1}`} key={item.image?.id || item.title || i}><div className="moment-art">{item.image ? <img className="real-site-photo" src={mediaUrl(item.image.path)} alt="Foto de demonstração de evento da Sonho Kids" loading={i === 0 ? "eager" : "lazy"} fetchPriority={i === 0 ? "high" : "auto"} decoding="async"/> : <span>{item.emoji}</span>}<small>SONHO KIDS • EVENTOS</small></div></div>)}</div>
+        <div className="moments-grid">{galleryItems.map((item, i) => <div className={`moment-card moment-${(i % 3) + 1}`} key={item.image?.id || item.title || i}><div className="moment-art">{item.image ? <img className="real-site-photo" src={mediaUrl(item.image.path)} alt="Foto de demonstração de evento da Sonho Kids" loading="lazy" decoding="async"/> : <span>{item.emoji}</span>}<small>SONHO KIDS • EVENTOS</small></div></div>)}</div>
         <div className="instagram-note"><Instagram/><p>Quer ver mais fotos dos nossos eventos?</p><a href={instagram} target="_blank" rel="noreferrer">Acompanhe nosso Instagram <ArrowUpRight size={16}/></a></div>
       </section>
 
