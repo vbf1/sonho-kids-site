@@ -140,6 +140,7 @@ function App() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [budgetForm, setBudgetForm] = useState({ products: [], date: '', time: '', duration: 'A combinar', location: '', eventType: '', name: '' });
+  const [budgetValidationErrors, setBudgetValidationErrors] = useState({});
   useEffect(() => {
     if (window.location.pathname.replace(/\/+$/, '').endsWith('/admin') || window.location.hash === '#/admin') return;
     let active = true;
@@ -150,21 +151,39 @@ function App() {
           supabase.from('site_settings').select('key,value')
         ]);
         if (!active) return;
-        const publishedImages = imageResult.error ? [] : (imageResult.data || []);
-        const settings = settingResult.error
-          ? {}
-          : Object.fromEntries((settingResult.data || []).map((item) => [item.key, item.value]));
-        const nextContent = { ...defaultContent, ...settings };
-        const nextLogoUrl = settings.logo_path ? mediaUrl(settings.logo_path) : '';
-        setImages(publishedImages);
-        setContent(nextContent);
-        setLogoUrl(nextLogoUrl);
-        try {
-          localStorage.setItem(SITE_CACHE_KEY, JSON.stringify({
-            images: publishedImages, content: nextContent, logoUrl: nextLogoUrl, savedAt: Date.now()
-          }));
-        } catch (cacheError) {
-          console.warn('Não foi possível guardar o conteúdo do site em cache:', cacheError);
+        const imagesLoaded = !imageResult.error;
+        const settingsLoaded = !settingResult.error;
+        const publishedImages = imagesLoaded ? (imageResult.data || []) : null;
+        const settings = settingsLoaded
+          ? Object.fromEntries((settingResult.data || []).map((item) => [item.key, item.value]))
+          : null;
+
+        // Uma falha temporária no Supabase não deve apagar o conteúdo já exibido/cacheado.
+        if (imagesLoaded) setImages(publishedImages);
+        if (settingsLoaded) {
+          const nextContent = { ...defaultContent, ...settings };
+          const nextLogoUrl = settings.logo_path ? mediaUrl(settings.logo_path) : '';
+          setContent(nextContent);
+          setLogoUrl(nextLogoUrl);
+        }
+
+        // Só substitui o cache quando as duas consultas terminaram com sucesso.
+        if (imagesLoaded && settingsLoaded) {
+          try {
+            localStorage.setItem(SITE_CACHE_KEY, JSON.stringify({
+              images: publishedImages,
+              content: { ...defaultContent, ...settings },
+              logoUrl: settings.logo_path ? mediaUrl(settings.logo_path) : '',
+              savedAt: Date.now()
+            }));
+          } catch (cacheError) {
+            console.warn('Não foi possível guardar o conteúdo do site em cache:', cacheError);
+          }
+        } else {
+          console.warn('Conteúdo publicado parcialmente indisponível; mantendo os dados já carregados e o cache existente.', {
+            imagesError: imageResult.error || null,
+            settingsError: settingResult.error || null
+          });
         }
       } catch (error) {
         console.error('Não foi possível carregar o conteúdo publicado:', error);
@@ -231,11 +250,20 @@ function App() {
     const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
     return localDate.toISOString().slice(0, 10);
   })();
-  const updateBudgetField = (field, value) => setBudgetForm((current) => ({ ...current, [field]: value }));
+  const updateBudgetField = (field, value) => {
+    setBudgetForm((current) => ({ ...current, [field]: value }));
+    setBudgetValidationErrors((current) => ({ ...current, [field]: '' }));
+  };
   const submitBudgetRequest = (event) => {
     event.preventDefault();
     const selectedNames = configuredToys.filter((toy) => budgetForm.products.includes(toy.imageCategory)).map((toy) => toy.name);
-    if (!selectedNames.length) return;
+    const errors = {};
+    if (!selectedNames.length) errors.products = 'Selecione pelo menos um brinquedo ou máquina para continuar.';
+    if (!budgetForm.date) errors.date = 'Informe a data do evento.';
+    else if (budgetForm.date < minEventDate) errors.date = 'Escolha uma data a partir de hoje.';
+    if (!budgetForm.location.trim()) errors.location = 'Informe o bairro e a cidade do evento.';
+    setBudgetValidationErrors(errors);
+    if (Object.keys(errors).length) return;
     const formattedDate = new Date(budgetForm.date + 'T12:00:00').toLocaleDateString('pt-BR');
     const message = [
       'Olá! Gostaria de solicitar um orçamento com a Sonho Kids Brinquedos.',
@@ -412,26 +440,29 @@ function App() {
           <h2 id="budget-title">Peça seu <span>orçamento</span></h2>
           <p>Conte um pouquinho sobre o evento. Vamos preparar sua mensagem para agilizar o atendimento pelo WhatsApp.</p>
         </div>
-        <form className="budget-form" onSubmit={submitBudgetRequest}>
+        <form className="budget-form" noValidate onSubmit={submitBudgetRequest}>
           <fieldset className="budget-products">
             <legend>O que você gostaria de alugar? <span>*</span></legend>
             <div className="budget-product-options">
               {configuredToys.map((toy) => <label className="budget-product-option" key={toy.imageCategory}>
-                <input type="checkbox" checked={budgetForm.products.includes(toy.imageCategory)} onChange={(event) => updateBudgetField("products", event.target.checked ? [...budgetForm.products, toy.imageCategory] : budgetForm.products.filter((item) => item !== toy.imageCategory))}/>
+                <input type="checkbox" checked={budgetForm.products.includes(toy.imageCategory)} onChange={(event) => {
+                  updateBudgetField("products", event.target.checked ? [...budgetForm.products, toy.imageCategory] : budgetForm.products.filter((item) => item !== toy.imageCategory));
+                }}/>
                 <span>{toy.emoji || "🎈"}</span><b>{toy.name}</b>
               </label>)}
             </div>
+            {budgetValidationErrors.products && <p className="budget-products-error" role="alert">{budgetValidationErrors.products}</p>}
           </fieldset>
           <div className="budget-fields">
-            <label>Data do evento <span>*</span><input type="date" min={minEventDate} required value={budgetForm.date} onChange={(event) => updateBudgetField("date", event.target.value)}/></label>
+            <label>Data do evento <span>*</span><input type="date" min={minEventDate} value={budgetForm.date} aria-invalid={Boolean(budgetValidationErrors.date)} onChange={(event) => updateBudgetField("date", event.target.value)}/>{budgetValidationErrors.date && <small className="budget-field-error" role="alert">{budgetValidationErrors.date}</small>}</label>
             <label>Horário previsto<input type="time" value={budgetForm.time} onChange={(event) => updateBudgetField("time", event.target.value)}/></label>
             <label>Duração desejada<select value={budgetForm.duration} onChange={(event) => updateBudgetField("duration", event.target.value)}><option>A combinar</option><option>Até 3 horas</option><option>4 horas</option><option>5 horas</option><option>6 horas</option><option>Mais de 6 horas</option></select></label>
-            <label>Bairro e cidade do evento <span>*</span><input type="text" required maxLength={120} placeholder="Ex.: Eldorado, Contagem" value={budgetForm.location} onChange={(event) => updateBudgetField("location", event.target.value)}/></label>
+            <label>Bairro e cidade do evento <span>*</span><input type="text" maxLength={120} placeholder="Ex.: Eldorado, Contagem" value={budgetForm.location} aria-invalid={Boolean(budgetValidationErrors.location)} onChange={(event) => updateBudgetField("location", event.target.value)}/>{budgetValidationErrors.location && <small className="budget-field-error" role="alert">{budgetValidationErrors.location}</small>}</label>
             <label>Tipo de evento<select value={budgetForm.eventType} onChange={(event) => updateBudgetField("eventType", event.target.value)}><option value="">Selecione (opcional)</option><option>Aniversário</option><option>Evento escolar</option><option>Evento corporativo</option><option>Confraternização</option><option>Outro</option></select></label>
             <label>Seu nome<input type="text" maxLength={80} placeholder="Como podemos chamar você?" value={budgetForm.name} onChange={(event) => updateBudgetField("name", event.target.value)}/></label>
           </div>
           <p className="budget-privacy-note">Seus dados serão usados apenas para montar a mensagem do seu pedido. O envio acontece quando você tocar no botão abaixo.</p>
-          <button className="budget-submit" type="submit" disabled={!budgetForm.products.length || !budgetForm.date || !budgetForm.location.trim()}><WhatsAppIcon size={20}/> Enviar pedido pelo WhatsApp</button>
+          <button className="budget-submit" type="submit"><WhatsAppIcon size={20}/> Enviar pedido pelo WhatsApp</button>
         </form>
       </section>
     </main>

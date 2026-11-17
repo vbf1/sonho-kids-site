@@ -1152,3 +1152,27 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   .budget-product-options, .budget-fields { grid-template-columns: minmax(0, 1fr); }
   .budget-product-option { min-height: 49px; }
 }
+
+
+/* Validação acessível do formulário de orçamento */
+.budget-products-error {
+  margin: 12px 0 0;
+  color: #b42318;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+
+.budget-field-error {
+  display: block;
+  margin-top: 6px;
+  color: #b42318;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.budget-form input[aria-invalid="true"] {
+  border-color: #b42318;
+}
