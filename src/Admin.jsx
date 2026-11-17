@@ -449,6 +449,8 @@ export default function Admin() {
   const uploadImages = async () => {
     if (!selectedFiles.length) return;
     setBusy(true); setError(''); setNotice('');
+    const uploadedPaths = [];
+    const insertedIds = [];
     try {
       for (const file of selectedFiles) {
         if (!file.type.startsWith('image/') || file.size > 8 * 1024 * 1024) throw new Error(file.name + ': use uma imagem de até 8 MB.');
@@ -459,15 +461,35 @@ export default function Admin() {
         const path = category + '/' + Date.now() + '-' + Math.random().toString(36).slice(2, 7) + '.' + ext;
         const { error: uploadError } = await supabase.storage.from('site-media').upload(path, file, { contentType: file.type, cacheControl: '31536000' });
         if (uploadError) throw uploadError;
+        uploadedPaths.push(path);
+
         const title = originalFile.name.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ');
-        const { error: rowError } = await supabase.from('site_images').insert({ category, title, path, sort_order: 0 });
+        const { data: insertedImage, error: rowError } = await supabase
+          .from('site_images')
+          .insert({ category, title, path, sort_order: 0 })
+          .select('id')
+          .single();
         if (rowError) throw rowError;
+        insertedIds.push(insertedImage.id);
       }
       setSelectedFiles([]);
       await loadContent();
       setNotice('Imagens enviadas e ajustadas automaticamente! O site público já pode exibi-las.');
-    } catch (e) { setError(e.message); }
-    finally { setBusy(false); }
+    } catch (e) {
+      let cleanupError = null;
+      if (insertedIds.length) {
+        const { error: deleteError } = await supabase.from('site_images').delete().in('id', insertedIds);
+        if (deleteError) cleanupError = deleteError;
+      }
+      if (!cleanupError && uploadedPaths.length) {
+        const { error: storageError } = await supabase.storage.from('site-media').remove(uploadedPaths);
+        if (storageError) cleanupError = storageError;
+      }
+      const message = e.message || 'Não foi possível enviar as imagens.';
+      setError(cleanupError
+        ? message + ' A limpeza automática também encontrou um problema: ' + cleanupError.message + '. Confira as fotos publicadas antes de tentar novamente.'
+        : message + ' Os arquivos e registros criados nesta tentativa foram removidos; você pode tentar novamente.');
+    } finally { setBusy(false); }
   };
 
   const updateImage = async (item, changes) => {
