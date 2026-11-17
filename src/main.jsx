@@ -33,7 +33,7 @@ const defaultContent = {
 const settingValue = (content, key) => content[key] || defaultContent[key];
 
 const SITE_CACHE_KEY = 'sonho-kids-site-content-v1';
-const BRAND_IMAGE_PATH = '/sonho-kids-identidade.webp';
+const BRAND_IMAGE_PATH = 'https://odnvspjizoufclhtzxuh.supabase.co/storage/v1/object/public/site-media/hero/1793832838141-0p4l0.webp';
 const readSiteCache = () => {
   try {
     const cached = JSON.parse(localStorage.getItem(SITE_CACHE_KEY) || 'null');
