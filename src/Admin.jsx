@@ -472,8 +472,8 @@ export default function Admin() {
         if (rowError) throw rowError;
         insertedIds.push(insertedImage.id);
       }
-      setSelectedFiles([]);
       await loadContent();
+      setSelectedFiles([]);
       setNotice('Imagens enviadas e ajustadas automaticamente! O site público já pode exibi-las.');
     } catch (e) {
       let cleanupError = null;
