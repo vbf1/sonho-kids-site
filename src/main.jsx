@@ -126,10 +126,12 @@ function Brand({ footer = false, logoUrl = '', loading = false }) {
 
 function App() {
   const initialCache = readSiteCache();
-  const [images, setImages] = useState(() => initialCache?.images || []);
+  // Never render cached media before revalidating it with Supabase: the admin may have replaced it.
+  // Keep cached text settings for fast paint, but wait for the current published media paths.
+  const [images, setImages] = useState([]);
   const [content, setContent] = useState(() => initialCache?.content || defaultContent);
-  const [logoUrl, setLogoUrl] = useState(() => initialCache?.logoUrl || '');
-  const [logoReady, setLogoReady] = useState(() => Boolean(initialCache));
+  const [logoUrl, setLogoUrl] = useState('');
+  const [logoReady, setLogoReady] = useState(false);
   const [previewPhoto, setPreviewPhoto] = useState(null);
   const photoTriggerRef = useRef(null);
   const openPhotoPreview = (photo) => {
