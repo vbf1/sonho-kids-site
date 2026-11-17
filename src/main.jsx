@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Instagram, ArrowUp, ArrowUpRight, ShieldCheck, PartyPopper, Heart, CheckCircle2, Menu, X } from 'lucide-react';
 import './styles.css';
@@ -131,6 +131,12 @@ function App() {
   const [logoUrl, setLogoUrl] = useState(() => initialCache?.logoUrl || '');
   const [logoReady, setLogoReady] = useState(() => Boolean(initialCache));
   const [previewPhoto, setPreviewPhoto] = useState(null);
+  const photoTriggerRef = useRef(null);
+  const openPhotoPreview = (photo) => {
+    photoTriggerRef.current = document.activeElement;
+    setPreviewPhoto(photo);
+  };
+  const closePhotoPreview = () => setPreviewPhoto(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
   useEffect(() => {
@@ -169,6 +175,25 @@ function App() {
     return () => { active = false; };
   }, []);
   useEffect(() => {
+    if (!previewPhoto) {
+      if (photoTriggerRef.current?.isConnected) photoTriggerRef.current.focus();
+      return;
+    }
+    const closeButton = document.querySelector('.photo-lightbox-close');
+    closeButton?.focus();
+    const handleDialogKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        closePhotoPreview();
+      } else if (event.key === 'Tab') {
+        event.preventDefault();
+        closeButton?.focus();
+      }
+    };
+    document.addEventListener('keydown', handleDialogKeyDown);
+    return () => document.removeEventListener('keydown', handleDialogKeyDown);
+  }, [previewPhoto]);
+  useEffect(() => {
     if (logoUrl) applyLogoPalette(logoUrl);
   }, [logoUrl]);
   useEffect(() => {
@@ -201,10 +226,10 @@ function App() {
       <header className="product-page-header"><Brand logoUrl={logoReady ? logoUrl : ''} loading={!logoReady}/><a className="product-back-link" href={window.location.pathname}>← Voltar aos brinquedos</a></header>
       <main className="product-page-main">
         <div className="product-page-heading"><span className="toy-kind">{selectedToy.kind}</span><h1>{selectedToy.name}</h1><p>{selectedToy.detail}</p></div>
-        {productImages.length ? <div className="product-gallery">{productImages.map((photo, index) => <button className="product-gallery-item" type="button" key={photo.id || photo.path} onClick={() => setPreviewPhoto({ src: mediaUrl(photo.path), title: photo.title || `${selectedToy.name} — foto ${index + 1}` })} aria-label={`Ampliar foto ${index + 1} de ${selectedToy.name}`}><img src={mediaUrl(photo.path)} alt={photo.title || `${selectedToy.name} — foto ${index + 1}`} loading={index === 0 ? "eager" : "lazy"} fetchPriority={index === 0 ? "high" : "auto"} decoding="async"/><span>Ampliar <ArrowUpRight size={15}/></span></button>)}</div> : <div className="product-gallery-empty"><span>{selectedToy.emoji}</span><h2>Fotos em breve</h2><p>Estamos preparando mais imagens deste produto. Volte em breve para conferir!</p></div>}
+        {productImages.length ? <div className="product-gallery">{productImages.map((photo, index) => <button className="product-gallery-item" type="button" key={photo.id || photo.path} onClick={() => openPhotoPreview({ src: mediaUrl(photo.path), title: photo.title || `${selectedToy.name} — foto ${index + 1}` })} aria-label={`Ampliar foto ${index + 1} de ${selectedToy.name}`}><img src={mediaUrl(photo.path)} alt={photo.title || `${selectedToy.name} — foto ${index + 1}`} loading={index === 0 ? "eager" : "lazy"} fetchPriority={index === 0 ? "high" : "auto"} decoding="async"/><span>Ampliar <ArrowUpRight size={15}/></span></button>)}</div> : <div className="product-gallery-empty"><span>{selectedToy.emoji}</span><h2>Fotos em breve</h2><p>Estamos preparando mais imagens deste produto. Volte em breve para conferir!</p></div>}
       </main>
       <footer className="site-footer product-page-footer"><Brand footer logoUrl={logoReady ? logoUrl : ''} loading={!logoReady}/><p>{settingValue(content, 'footer_text')}</p><div className="footer-social"><a href={instagram} aria-label="Instagram" target="_blank" rel="noreferrer"><Instagram/></a></div><small>© {new Date().getFullYear()} Sonho Kids Brinquedos. Todos os direitos reservados.</small></footer>
-    {previewPhoto && <div className="photo-lightbox" role="dialog" aria-modal="true" aria-label={previewPhoto.title} onClick={() => setPreviewPhoto(null)}><button className="photo-lightbox-close" type="button" aria-label="Fechar foto" onClick={() => setPreviewPhoto(null)}>×</button><img src={previewPhoto.src} alt={previewPhoto.title} onClick={(event) => event.stopPropagation()}/></div>}
+    {previewPhoto && <div className="photo-lightbox" role="dialog" aria-modal="true" aria-label={previewPhoto.title} onClick={closePhotoPreview}><button className="photo-lightbox-close" type="button" aria-label="Fechar foto" onClick={closePhotoPreview}>×</button><img src={previewPhoto.src} alt={previewPhoto.title} onClick={(event) => event.stopPropagation()}/></div>}
       <a className="whatsapp-float" href={whatsapp} aria-label="Fale conosco pelo WhatsApp" target="_blank" rel="noreferrer"><WhatsAppIcon size={27}/></a>
       {showScrollTop && <button className="scroll-top-float" type="button" aria-label="Voltar ao topo" title="Voltar ao topo" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}><ArrowUp size={23}/></button>}
     </div>;
@@ -345,8 +370,8 @@ function App() {
     </main>
 
     <footer className="site-footer"><Brand footer logoUrl={logoReady ? logoUrl : ''} loading={!logoReady}/><p>{settingValue(content, 'footer_text')}</p><div className="footer-social"><a href={instagram} aria-label="Instagram" target="_blank" rel="noreferrer"><Instagram/></a></div><small>© {new Date().getFullYear()} Sonho Kids Brinquedos. Todos os direitos reservados.</small></footer>
-    {previewPhoto && <div className="photo-lightbox" role="dialog" aria-modal="true" aria-label={previewPhoto.title} onClick={() => setPreviewPhoto(null)}>
-      <button className="photo-lightbox-close" type="button" aria-label="Fechar foto" onClick={() => setPreviewPhoto(null)}>×</button>
+    {previewPhoto && <div className="photo-lightbox" role="dialog" aria-modal="true" aria-label={previewPhoto.title} onClick={closePhotoPreview}>
+      <button className="photo-lightbox-close" type="button" aria-label="Fechar foto" onClick={closePhotoPreview}>×</button>
       <img src={previewPhoto.src} alt={previewPhoto.title} onClick={(event) => event.stopPropagation()}/>
     </div>}
     <a className="whatsapp-float" href={whatsapp} aria-label="Fale conosco pelo WhatsApp" target="_blank" rel="noreferrer"><WhatsAppIcon size={24}/></a>
