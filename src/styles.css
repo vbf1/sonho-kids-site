@@ -1035,3 +1035,69 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   .google-preview-content h3 { font-size: 16px; }
   .google-preview-footer { font-size: 10px; }
 }
+
+
+/* Ajustes dedicados para tablets, notebooks e monitores grandes. */
+@media (min-width: 761px) and (max-width: 1100px) {
+  :root { --page-gutter: 28px; --section-space: 72px; }
+  .site-header {
+    min-height: 82px;
+    height: auto;
+    gap: 16px;
+    padding-block: 10px;
+  }
+  .site-header .brand-logo,
+  .product-page-header .brand-logo { max-width: 190px; height: 64px; }
+  .site-header nav { gap: clamp(10px, 1.5vw, 17px); }
+  .site-header nav a { font-size: 12px; }
+  .header-cta { padding: 11px 13px; font-size: 11px; }
+  .hero {
+    grid-template-columns: minmax(0, 1fr) minmax(0, .9fr);
+    gap: 24px;
+    padding-top: 58px;
+    padding-bottom: 62px;
+  }
+  .hero h1 { font-size: clamp(40px, 5vw, 54px); }
+  .hero-visual { height: 340px; }
+  .hero-main-photo { min-height: 300px; }
+  .toy-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .toy-art { height: 190px; }
+  .moments-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .moment-art { height: 210px; }
+  .product-gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .google-profile-section {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 28px;
+  }
+  .google-preview-card { padding: 18px; }
+}
+
+@media (min-width: 1101px) {
+  .site-header nav { gap: clamp(22px, 2.4vw, 36px); }
+  .hero { min-height: 560px; }
+  .toy-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .moments-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .product-gallery { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (min-width: 1440px) {
+  :root { --content-width: 1240px; --page-gutter: 44px; }
+  .hero { gap: 72px; padding-block: 92px; }
+  .hero h1 { font-size: clamp(58px, 4.2vw, 70px); }
+  .hero-visual { max-width: 560px; height: 440px; }
+  .toy-art { height: 220px; }
+  .moment-art { height: 250px; }
+}
+
+@media (max-width: 900px) and (min-width: 761px) {
+  .site-header { flex-wrap: wrap; justify-content: center; padding-block: 12px; }
+  .site-header nav { order: 3; flex: 1 0 100%; justify-content: center; }
+  .hero { grid-template-columns: minmax(0, 1fr) minmax(0, .8fr); }
+  .hero-visual { transform: scale(.92); }
+  .google-profile-section { grid-template-columns: minmax(0, 1fr); }
+  .google-profile-copy, .google-preview-card { width: min(100%, 650px); justify-self: center; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
