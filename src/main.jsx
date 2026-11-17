@@ -145,27 +145,37 @@ function App() {
     let active = true;
     const loadPublishedSite = async () => {
       try {
-        const [imageResult, settingResult] = await Promise.all([
-          supabase.from('site_images').select('id,path,category,title,sort_order,created_at').order('sort_order').order('created_at', { ascending: false }),
-          supabase.from('site_settings').select('key,value')
-        ]);
-        if (!active) return;
-        const publishedImages = imageResult.error ? [] : (imageResult.data || []);
-        const settings = settingResult.error
-          ? {}
-          : Object.fromEntries((settingResult.data || []).map((item) => [item.key, item.value]));
-        const nextContent = { ...defaultContent, ...settings };
-        const nextLogoUrl = settings.logo_path ? mediaUrl(settings.logo_path) : '';
-        setImages(publishedImages);
-        setContent(nextContent);
-        setLogoUrl(nextLogoUrl);
-        try {
-          localStorage.setItem(SITE_CACHE_KEY, JSON.stringify({
-            images: publishedImages, content: nextContent, logoUrl: nextLogoUrl, savedAt: Date.now()
-          }));
-        } catch (cacheError) {
-          console.warn('Não foi possível guardar o conteúdo do site em cache:', cacheError);
-        }
+        const saveSiteCache = (updates) => {
+          try {
+            const cached = readSiteCache();
+            localStorage.setItem(SITE_CACHE_KEY, JSON.stringify({
+              images: updates.images ?? cached?.images ?? initialCache?.images ?? [],
+              content: updates.content ?? cached?.content ?? initialCache?.content ?? defaultContent,
+              logoUrl: updates.logoUrl ?? cached?.logoUrl ?? initialCache?.logoUrl ?? '',
+              savedAt: Date.now()
+            }));
+          } catch (cacheError) {
+            console.warn('Não foi possível guardar o conteúdo do site em cache:', cacheError);
+          }
+        };
+        const imageRequest = supabase.from('site_images').select('id,path,category,title,sort_order,created_at').order('sort_order').order('created_at', { ascending: false });
+        const settingsRequest = supabase.from('site_settings').select('key,value');
+        const imageTask = imageRequest.then(({ data, error }) => {
+          if (!active) return;
+          const publishedImages = error ? [] : (data || []);
+          setImages(publishedImages);
+          saveSiteCache({ images: publishedImages });
+        });
+        const settingsTask = settingsRequest.then(({ data, error }) => {
+          if (!active) return;
+          const settings = error ? {} : Object.fromEntries((data || []).map((item) => [item.key, item.value]));
+          const nextContent = { ...defaultContent, ...settings };
+          const nextLogoUrl = settings.logo_path ? mediaUrl(settings.logo_path) : '';
+          setContent(nextContent);
+          setLogoUrl(nextLogoUrl);
+          saveSiteCache({ content: nextContent, logoUrl: nextLogoUrl });
+        });
+        await Promise.all([imageTask, settingsTask]);
       } catch (error) {
         console.error('Não foi possível carregar o conteúdo publicado:', error);
       } finally {
