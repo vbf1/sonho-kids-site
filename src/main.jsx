@@ -327,17 +327,17 @@ function App() {
             Visitar nossa página no Google <ArrowUpRight size={17}/>
           </a>
         </div>
-        <a className="google-preview-card" href="https://share.google/xNPHDRZ7yr1iwqNoG" target="_blank" rel="noopener noreferrer" aria-label="Abrir perfil da Sonho Kids Brinquedos no Google">
+        <a className="google-preview-card" href="https://share.google/xNPHDRZ7yr1iwqNoG" target="_blank" rel="noopener noreferrer" aria-label="Consultar avaliações e informações oficiais da Sonho Kids no Google">
           <div className="google-preview-top">
             <span className="google-g" aria-hidden="true">G</span>
-            <span><strong>Perfil da empresa</strong><small>Visualização do Google</small></span>
+            <span><strong>Avaliações no Google</strong><small>Perfil oficial da Sonho Kids</small></span>
             <ArrowUpRight size={18}/>
           </div>
           <div className="google-preview-content">
-            <div className="google-preview-brand">🎈</div>
-            <div><h3>Sonho Kids Brinquedos</h3><p>Locação de brinquedos para festas e eventos</p><span>Veja fotos, avaliações e informações no Google</span></div>
+            <div className="google-preview-brand" aria-hidden="true">⭐</div>
+            <div><h3>Conheça a opinião dos clientes</h3><p>Consulte a nota, leia os comentários e veja fotos publicadas no perfil da Sonho Kids.</p><span>As avaliações são consultadas diretamente no Google para mostrar sempre a informação original.</span></div>
           </div>
-          <div className="google-preview-footer"><span>Google</span><span>Toque para abrir o perfil ↗</span></div>
+          <div className="google-preview-footer"><span>Perfil oficial</span><span>Consultar no Google ↗</span></div>
         </a>
       </section>
 
