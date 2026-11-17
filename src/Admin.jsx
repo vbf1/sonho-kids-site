@@ -57,6 +57,24 @@ const defaultSettings = {
 };
 const labelFor = (key) => categories.find(([value]) => value === key)?.[1] || key;
 
+// A single public JSON file lets the website load all published media/settings from the Storage CDN.
+const publishPublicManifest = async (images, settings) => {
+  const manifest = {
+    schemaVersion: 1,
+    publishedAt: new Date().toISOString(),
+    images: images || [],
+    content: { ...defaultSettings, ...settings },
+    logoPath: settings.logo_path || ''
+  };
+  const body = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
+  const { error } = await supabase.storage.from('site-media').upload(
+    'published/site-manifest.json',
+    body,
+    { contentType: 'application/json', cacheControl: '15', upsert: true }
+  );
+  if (error) throw error;
+};
+
 const prepareImageForUpload = async (file) => {
   // GIFs and SVGs stay untouched to preserve animation and vector quality.
   if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) return file;
@@ -266,6 +284,12 @@ export default function Admin() {
       const savedCatalog = settingMap.catalog_items ? JSON.parse(settingMap.catalog_items) : null;
       setCatalogItems(Array.isArray(savedCatalog) ? savedCatalog : defaultCatalogItems);
     } catch { setCatalogItems(defaultCatalogItems); }
+    try {
+      await publishPublicManifest(data || [], settingMap);
+    } catch (manifestError) {
+      console.error('Não foi possível atualizar o manifesto rápido do site:', manifestError);
+      setError('As informações foram carregadas no painel, mas não foi possível atualizar o arquivo rápido do site: ' + manifestError.message);
+    }
   };
 
   useEffect(() => {
@@ -386,6 +410,7 @@ export default function Admin() {
           throw updateError;
         }
         await supabase.storage.from('site-media').remove([item.path]);
+        await loadContent();
         setImages((current) => current.map((img) => img.id === item.id ? { ...img, path } : img));
         closeImageEditor();
         setNotice('Foto publicada atualizada com sucesso. A versão editada já está no site.');
@@ -411,6 +436,7 @@ export default function Admin() {
       if (settingError) throw settingError;
       if (logoPath) await supabase.storage.from('site-media').remove([logoPath]);
       setLogoPath(path); setLogoPreview(mediaUrl(path)); setLogoFile(null);
+      await loadContent();
       setNotice('Logo atualizada! Ela já está disponível no site público.');
     } catch (e) { setError(e.message); }
     finally { setBusy(false); }
@@ -496,7 +522,7 @@ export default function Admin() {
     setError(''); setNotice('');
     const { error: updateError } = await supabase.from('site_images').update(changes).eq('id', item.id);
     if (updateError) setError(updateError.message);
-    else { setImages((current) => current.map((img) => img.id === item.id ? { ...img, ...changes } : img)); setNotice('Alterações salvas.'); }
+    else { await loadContent(); setNotice('Alterações salvas.'); }
   };
 
   const deleteImage = async (item) => {
@@ -506,6 +532,7 @@ export default function Admin() {
     const { error: storageError } = await supabase.storage.from('site-media').remove([item.path]);
     if (storageError) setError('Registro removido, mas o arquivo não pôde ser apagado: ' + storageError.message);
     setImages((current) => current.filter((img) => img.id !== item.id));
+    await loadContent();
     setBusy(false);
     if (!storageError) setNotice('Imagem excluída.');
     setDeleteTarget(null);
@@ -518,6 +545,7 @@ export default function Admin() {
       const rows = [...Object.entries(siteSettings), ['catalog_items', JSON.stringify(catalogItems)]].map(([key, value]) => ({ key, value: String(value ?? ''), updated_at: new Date().toISOString() }));
       const { error: saveError } = await supabase.from('site_settings').upsert(rows, { onConflict: 'key' });
       if (saveError) throw saveError;
+      await loadContent();
       setNotice('Informações do site salvas! As alterações já estão disponíveis para os visitantes.');
     } catch (e) { setError(e.message || 'Não foi possível salvar as informações.'); }
     finally { setBusy(false); }
