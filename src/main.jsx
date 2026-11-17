@@ -160,8 +160,8 @@ function App() {
             console.warn('Não foi possível guardar o conteúdo do site em cache:', cacheError);
           }
         };
-        // Match the previously successful loading sequence: fetch the published records,
-        // preload every current image (including the logo), then reveal the new media together.
+        // Fetch current published data together, but only wait for above-the-fold media.
+        // All other photos are rendered from the fresh records and load lazily as needed.
         const [imageResult, settingsResult] = await Promise.all([
           supabase.from('site_images').select('id,path,category,title,sort_order,created_at').order('sort_order').order('created_at', { ascending: false }),
           supabase.from('site_settings').select('key,value')
@@ -171,6 +171,8 @@ function App() {
         const settings = settingsResult.error ? {} : Object.fromEntries((settingsResult.data || []).map((item) => [item.key, item.value]));
         const nextContent = { ...defaultContent, ...settings };
         const nextLogoUrl = settings.logo_path ? mediaUrl(settings.logo_path) : '';
+        const heroImage = publishedImages.find((item) => item.category === 'hero');
+        const criticalImageUrls = [nextLogoUrl, heroImage ? mediaUrl(heroImage.path) : ''].filter(Boolean);
         const preloadImage = (url) => new Promise((resolve) => {
           if (!url) return resolve();
           const image = new Image();
@@ -178,9 +180,7 @@ function App() {
           image.onerror = () => resolve();
           image.src = url;
         });
-        const imageUrls = publishedImages.map((item) => mediaUrl(item.path)).filter(Boolean);
-        if (nextLogoUrl) imageUrls.push(nextLogoUrl);
-        await Promise.all(imageUrls.map(preloadImage));
+        await Promise.all(criticalImageUrls.map(preloadImage));
         if (!active) return;
         setImages(publishedImages);
         setContent(nextContent);
