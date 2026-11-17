@@ -203,6 +203,17 @@ function App() {
     window.addEventListener('scroll', updateScrollState, { passive: true });
     return () => window.removeEventListener('scroll', updateScrollState);
   }, []);
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+    const handleMenuKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        setMobileMenuOpen(false);
+      }
+    };
+    document.addEventListener('keydown', handleMenuKeyDown);
+    return () => document.removeEventListener('keydown', handleMenuKeyDown);
+  }, [mobileMenuOpen]);
   if (window.location.pathname.replace(/\/+$/, '').endsWith('/admin') || window.location.hash === '#/admin') return <Admin />;
   let savedCatalog = null;
   try { savedCatalog = content.catalog_items ? JSON.parse(content.catalog_items) : null; } catch { savedCatalog = null; }
