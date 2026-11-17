@@ -160,44 +160,32 @@ function App() {
             console.warn('Não foi possível guardar o conteúdo do site em cache:', cacheError);
           }
         };
-        // Public visitors read one CDN-cached manifest instead of waiting for two database queries.
-        // The admin publishes this file whenever site content or media changes.
-        let manifestLoaded = false;
-        try {
-          const response = await fetch(mediaUrl('published/site-manifest.json'), { cache: 'no-store' });
-          if (!response.ok) throw new Error('Manifesto público ainda não foi publicado.');
-          const manifest = await response.json();
-          if (manifest?.schemaVersion !== 1 || !Array.isArray(manifest.images) || !manifest.content) {
-            throw new Error('Manifesto público inválido.');
-          }
-          if (!active) return;
-          const publishedImages = manifest.images;
-          const nextContent = { ...defaultContent, ...manifest.content };
-          const nextLogoUrl = manifest.logoPath ? mediaUrl(manifest.logoPath) : '';
-          setImages(publishedImages);
-          setContent(nextContent);
-          setLogoUrl(nextLogoUrl);
-          saveSiteCache({ images: publishedImages, content: nextContent, logoUrl: nextLogoUrl });
-          manifestLoaded = true;
-        } catch (manifestError) {
-          console.warn('Manifesto público indisponível; usando consulta de compatibilidade:', manifestError);
-        }
-        // Compatibility fallback for the first rollout or a temporary manifest issue.
-        if (!manifestLoaded) {
-          const [imageResult, settingsResult] = await Promise.all([
-            supabase.from('site_images').select('id,path,category,title,sort_order,created_at').order('sort_order').order('created_at', { ascending: false }),
-            supabase.from('site_settings').select('key,value')
-          ]);
-          if (!active) return;
-          const publishedImages = imageResult.error ? [] : (imageResult.data || []);
-          const settings = settingsResult.error ? {} : Object.fromEntries((settingsResult.data || []).map((item) => [item.key, item.value]));
-          const nextContent = { ...defaultContent, ...settings };
-          const nextLogoUrl = settings.logo_path ? mediaUrl(settings.logo_path) : '';
-          setImages(publishedImages);
-          setContent(nextContent);
-          setLogoUrl(nextLogoUrl);
-          saveSiteCache({ images: publishedImages, content: nextContent, logoUrl: nextLogoUrl });
-        }
+        // Match the previously successful loading sequence: fetch the published records,
+        // preload every current image (including the logo), then reveal the new media together.
+        const [imageResult, settingsResult] = await Promise.all([
+          supabase.from('site_images').select('id,path,category,title,sort_order,created_at').order('sort_order').order('created_at', { ascending: false }),
+          supabase.from('site_settings').select('key,value')
+        ]);
+        if (!active) return;
+        const publishedImages = imageResult.error ? [] : (imageResult.data || []);
+        const settings = settingsResult.error ? {} : Object.fromEntries((settingsResult.data || []).map((item) => [item.key, item.value]));
+        const nextContent = { ...defaultContent, ...settings };
+        const nextLogoUrl = settings.logo_path ? mediaUrl(settings.logo_path) : '';
+        const preloadImage = (url) => new Promise((resolve) => {
+          if (!url) return resolve();
+          const image = new Image();
+          image.onload = () => resolve();
+          image.onerror = () => resolve();
+          image.src = url;
+        });
+        const imageUrls = publishedImages.map((item) => mediaUrl(item.path)).filter(Boolean);
+        if (nextLogoUrl) imageUrls.push(nextLogoUrl);
+        await Promise.all(imageUrls.map(preloadImage));
+        if (!active) return;
+        setImages(publishedImages);
+        setContent(nextContent);
+        setLogoUrl(nextLogoUrl);
+        saveSiteCache({ images: publishedImages, content: nextContent, logoUrl: nextLogoUrl });
       } catch (error) {
         console.error('Não foi possível carregar o conteúdo publicado:', error);
       } finally {
