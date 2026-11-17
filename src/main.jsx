@@ -269,7 +269,7 @@ function App() {
       </main>
       <footer className="site-footer product-page-footer"><Brand footer logoUrl={logoReady ? logoUrl : ''} loading={!logoReady}/><p>{settingValue(content, 'footer_text')}</p><div className="footer-social"><a href={instagram} aria-label="Instagram" target="_blank" rel="noreferrer"><Instagram/></a></div><small>© {new Date().getFullYear()} Sonho Kids Brinquedos. Todos os direitos reservados.</small></footer>
     {previewPhoto && <div className="photo-lightbox" role="dialog" aria-modal="true" aria-label={previewPhoto.title} onClick={closePhotoPreview}><button className="photo-lightbox-close" type="button" aria-label="Fechar foto" onClick={closePhotoPreview}>×</button><img src={previewPhoto.src} alt={previewPhoto.title} onClick={(event) => event.stopPropagation()}/></div>}
-      <a className="whatsapp-float" href={`${window.location.pathname}#orcamento`} aria-label="Ir para o formulário de orçamento" title="Pedir orçamento"><WhatsAppIcon size={27}/></a>
+      <a className="whatsapp-float" href="#orcamento" aria-label="Ir para o formulário de orçamento" title="Pedir orçamento"><WhatsAppIcon size={27}/></a>
       {showScrollTop && <button className="scroll-top-float" type="button" aria-label="Voltar ao topo" title="Voltar ao topo" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}><ArrowUp size={23}/></button>}
     </div>;
   }
@@ -282,7 +282,7 @@ function App() {
           <div className="toy-grid">{configuredToys.map((toy, toyIndex) => {
             const toyImage = images.find((image) => image.category === toy.imageCategory);
             return <a className={`toy-card ${toy.color}`} key={toy.imageCategory} href={`?produto=${encodeURIComponent(toy.imageCategory)}`} aria-label={`Ver fotos de ${toy.name}`}>
-              <div className="toy-art">{toyImage ? <img className="real-site-photo" src={mediaUrl(toyImage.path)} alt={toy.name} loading="lazy" decoding="async"/> : <div className="toy-placeholder"><span className="toy-placeholder-glow"/><span className="toy-emoji">{toy.emoji}</span><small>IMAGEM EM BREVE</small></div>}<span className="toy-art-caption">{toy.visualLabel}</span><span className="toy-spark">✦</span></div>
+              <div className="toy-art">{toyImage ? <img className="real-site-photo" src={mediaUrl(toyImage.path)} alt={toy.name} loading={toyIndex === 0 ? "eager" : "lazy"} fetchPriority={toyIndex === 0 ? "high" : "auto"} decoding="async"/> : <div className="toy-placeholder"><span className="toy-placeholder-glow"/><span className="toy-emoji">{toy.emoji}</span><small>IMAGEM EM BREVE</small></div>}<span className="toy-art-caption">{toy.visualLabel}</span><span className="toy-spark">✦</span></div>
               <div className="toy-info"><span className="toy-kind">{toy.kind}</span><h3>{toy.name}</h3><p>{toy.detail}</p><span className="toy-card-cta">Ver fotos do produto <ArrowUpRight size={16}/></span></div>
             </a>;
           })}</div>
