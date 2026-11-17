@@ -269,7 +269,7 @@ function App() {
       </main>
       <footer className="site-footer product-page-footer"><Brand footer logoUrl={logoReady ? logoUrl : ''} loading={!logoReady}/><p>{settingValue(content, 'footer_text')}</p><div className="footer-social"><a href={instagram} aria-label="Instagram" target="_blank" rel="noreferrer"><Instagram/></a></div><small>© {new Date().getFullYear()} Sonho Kids Brinquedos. Todos os direitos reservados.</small></footer>
     {previewPhoto && <div className="photo-lightbox" role="dialog" aria-modal="true" aria-label={previewPhoto.title} onClick={closePhotoPreview}><button className="photo-lightbox-close" type="button" aria-label="Fechar foto" onClick={closePhotoPreview}>×</button><img src={previewPhoto.src} alt={previewPhoto.title} onClick={(event) => event.stopPropagation()}/></div>}
-      <a className="whatsapp-float" href={whatsapp} aria-label="Fale conosco pelo WhatsApp" target="_blank" rel="noreferrer"><WhatsAppIcon size={27}/></a>
+      <a className="whatsapp-float" href={`${window.location.pathname}#orcamento`} aria-label="Ir para o formulário de orçamento" title="Pedir orçamento"><WhatsAppIcon size={27}/></a>
       {showScrollTop && <button className="scroll-top-float" type="button" aria-label="Voltar ao topo" title="Voltar ao topo" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}><ArrowUp size={23}/></button>}
     </div>;
   }
@@ -290,7 +290,7 @@ function App() {
         </section>
       </main>
       <footer className="site-footer product-page-footer"><Brand footer logoUrl={logoReady ? logoUrl : ''} loading={!logoReady}/><p>{settingValue(content, 'footer_text')}</p><div className="footer-social"><a href={instagram} aria-label="Instagram" target="_blank" rel="noreferrer"><Instagram/></a></div><small>© {new Date().getFullYear()} Sonho Kids Brinquedos. Todos os direitos reservados.</small></footer>
-      <a className="whatsapp-float" href={whatsappLink(content)} aria-label="Fale conosco pelo WhatsApp" target="_blank" rel="noreferrer"><WhatsAppIcon size={27}/></a>
+      <a className="whatsapp-float" href={`${window.location.pathname}#orcamento`} aria-label="Ir para o formulário de orçamento" title="Pedir orçamento"><WhatsAppIcon size={27}/></a>
     </div>;
   }
   const structuredData = {
@@ -441,7 +441,7 @@ function App() {
       <button className="photo-lightbox-close" type="button" aria-label="Fechar foto" onClick={closePhotoPreview}>×</button>
       <img src={previewPhoto.src} alt={previewPhoto.title} onClick={(event) => event.stopPropagation()}/>
     </div>}
-    <a className="whatsapp-float" href={whatsapp} aria-label="Fale conosco pelo WhatsApp" target="_blank" rel="noreferrer"><WhatsAppIcon size={24}/></a>
+    <a className="whatsapp-float" href={`${window.location.pathname}#orcamento`} aria-label="Ir para o formulário de orçamento" title="Pedir orçamento"><WhatsAppIcon size={24}/></a>
     {showScrollTop && <button className="scroll-top-float" type="button" aria-label="Voltar ao topo" title="Voltar ao topo" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}><ArrowUp size={23}/></button>}
   </>;
 }
