@@ -1,0 +1,48 @@
+name: Generate and validate dependency lockfile
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "package.json"
+      - ".github/workflows/lockfile-bootstrap.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  lockfile:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Generate package lock
+        run: npm install --package-lock-only --ignore-scripts
+      - name: Install exactly from generated lockfile
+        run: npm ci
+      - name: Audit high and critical vulnerabilities
+        run: npm audit --audit-level=high
+      - name: Verify production build
+        run: npm run build
+      - name: Create pull request with lockfile
+        uses: peter-evans/create-pull-request@v7
+        with:
+          commit-message: "Add reproducible npm lockfile"
+          title: "Add package-lock.json for reproducible installs"
+          body: |
+            This pull request adds the npm lockfile generated from the current package.json.
+
+            Validation performed in GitHub Actions:
+            - npm ci
+            - npm audit --audit-level=high
+            - npm run build
+
+            Please review the generated dependency versions before merging.
+          branch: automation/add-package-lock
+          delete-branch: true
