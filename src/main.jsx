@@ -139,6 +139,7 @@ function App() {
   const closePhotoPreview = () => setPreviewPhoto(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [budgetForm, setBudgetForm] = useState({ products: [], date: '', time: '', duration: 'A combinar', location: '', eventType: '', name: '' });
   useEffect(() => {
     if (window.location.pathname.replace(/\/+$/, '').endsWith('/admin') || window.location.hash === '#/admin') return;
     let active = true;
@@ -225,6 +226,33 @@ function App() {
   const catalogMode = content.catalog_display_mode === 'catalog';
   const catalogPage = queryParams.get('catalogo') === '1';
   const whatsapp = whatsappLink(content);
+  const minEventDate = (() => {
+    const date = new Date();
+    const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+    return localDate.toISOString().slice(0, 10);
+  })();
+  const updateBudgetField = (field, value) => setBudgetForm((current) => ({ ...current, [field]: value }));
+  const submitBudgetRequest = (event) => {
+    event.preventDefault();
+    const selectedNames = configuredToys.filter((toy) => budgetForm.products.includes(toy.imageCategory)).map((toy) => toy.name);
+    if (!selectedNames.length) return;
+    const formattedDate = new Date(budgetForm.date + 'T12:00:00').toLocaleDateString('pt-BR');
+    const message = [
+      'Olá! Gostaria de solicitar um orçamento com a Sonho Kids Brinquedos.',
+      '',
+      'Brinquedo(s)/máquina(s): ' + selectedNames.join(', '),
+      'Data do evento: ' + formattedDate,
+      budgetForm.time ? 'Horário previsto: ' + budgetForm.time : '',
+      'Duração: ' + budgetForm.duration,
+      'Local (bairro/cidade): ' + budgetForm.location.trim(),
+      budgetForm.eventType ? 'Tipo de evento: ' + budgetForm.eventType : '',
+      budgetForm.name.trim() ? 'Nome: ' + budgetForm.name.trim() : '',
+      '',
+      'Poderiam, por favor, verificar a disponibilidade e me enviar um orçamento?'
+    ].filter(Boolean).join('\n');
+    const phone = (settingValue(content, 'whatsapp_phone').match(/[0-9]/g) || []).join('');
+    window.location.href = 'https://wa.me/' + phone + '?text=' + encodeURIComponent(message);
+  };
   const instagram = settingValue(content, 'instagram_url');
   const heroImage = images.find((image) => image.category === 'hero');
   const eventImages = images.filter((image) => image.category === 'eventos');
@@ -378,6 +406,34 @@ function App() {
       </section>
 
       <section className="contact-section" id="contato"><div className="contact-decoration">🎈</div><div><div className="eyebrow">{settingValue(content, 'contact_eyebrow')}</div><h2>{settingValue(content, 'contact_title')}</h2><p>{settingValue(content, 'contact_description')}</p></div></section>
+      <section className="budget-section" id="orcamento" aria-labelledby="budget-title">
+        <div className="budget-heading">
+          <div className="eyebrow">VAMOS PLANEJAR SUA FESTA?</div>
+          <h2 id="budget-title">Peça seu <span>orçamento</span></h2>
+          <p>Conte um pouquinho sobre o evento. Vamos preparar sua mensagem para agilizar o atendimento pelo WhatsApp.</p>
+        </div>
+        <form className="budget-form" onSubmit={submitBudgetRequest}>
+          <fieldset className="budget-products">
+            <legend>O que você gostaria de alugar? <span>*</span></legend>
+            <div className="budget-product-options">
+              {configuredToys.map((toy) => <label className="budget-product-option" key={toy.imageCategory}>
+                <input type="checkbox" checked={budgetForm.products.includes(toy.imageCategory)} onChange={(event) => updateBudgetField("products", event.target.checked ? [...budgetForm.products, toy.imageCategory] : budgetForm.products.filter((item) => item !== toy.imageCategory))}/>
+                <span>{toy.emoji || "🎈"}</span><b>{toy.name}</b>
+              </label>)}
+            </div>
+          </fieldset>
+          <div className="budget-fields">
+            <label>Data do evento <span>*</span><input type="date" min={minEventDate} required value={budgetForm.date} onChange={(event) => updateBudgetField("date", event.target.value)}/></label>
+            <label>Horário previsto<input type="time" value={budgetForm.time} onChange={(event) => updateBudgetField("time", event.target.value)}/></label>
+            <label>Duração desejada<select value={budgetForm.duration} onChange={(event) => updateBudgetField("duration", event.target.value)}><option>A combinar</option><option>Até 3 horas</option><option>4 horas</option><option>5 horas</option><option>6 horas</option><option>Mais de 6 horas</option></select></label>
+            <label>Bairro e cidade do evento <span>*</span><input type="text" required maxLength={120} placeholder="Ex.: Eldorado, Contagem" value={budgetForm.location} onChange={(event) => updateBudgetField("location", event.target.value)}/></label>
+            <label>Tipo de evento<select value={budgetForm.eventType} onChange={(event) => updateBudgetField("eventType", event.target.value)}><option value="">Selecione (opcional)</option><option>Aniversário</option><option>Evento escolar</option><option>Evento corporativo</option><option>Confraternização</option><option>Outro</option></select></label>
+            <label>Seu nome<input type="text" maxLength={80} placeholder="Como podemos chamar você?" value={budgetForm.name} onChange={(event) => updateBudgetField("name", event.target.value)}/></label>
+          </div>
+          <p className="budget-privacy-note">Seus dados serão usados apenas para montar a mensagem do seu pedido. O envio acontece quando você tocar no botão abaixo.</p>
+          <button className="budget-submit" type="submit" disabled={!budgetForm.products.length || !budgetForm.date || !budgetForm.location.trim()}><WhatsAppIcon size={20}/> Enviar pedido pelo WhatsApp</button>
+        </form>
+      </section>
     </main>
 
     <footer className="site-footer"><Brand footer logoUrl={logoReady ? logoUrl : ''} loading={!logoReady}/><p>{settingValue(content, 'footer_text')}</p><div className="footer-social"><a href={instagram} aria-label="Instagram" target="_blank" rel="noreferrer"><Instagram/></a></div><small>© {new Date().getFullYear()} Sonho Kids Brinquedos. Todos os direitos reservados.</small></footer>
