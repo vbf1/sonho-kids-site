@@ -233,7 +233,7 @@ function App() {
     "@context": "https://schema.org",
     "@type": "Organization",
     "name": "Sonho Kids Brinquedos",
-    "url": "https://vbf1.github.io/sonho-kids-site/",
+    "url": "https://sonho-kids-brinquedos.netlify.app/",
     "description": "Locação de brinquedos para festas e eventos em Belo Horizonte e região: cama elástica, piscina de bolinhas, máquina de pipoca e máquina de algodão-doce.",
     "telephone": "+5531999857343",
     "sameAs": ["https://www.instagram.com/sonhokidsbrinquedos/"],
