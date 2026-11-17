@@ -1152,3 +1152,35 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   .budget-product-options, .budget-fields { grid-template-columns: minmax(0, 1fr); }
   .budget-product-option { min-height: 49px; }
 }
+
+
+/* Depoimentos reais fornecidos pela Sonho Kids Brinquedos. */
+.reviews-section {
+  display: block;
+  padding: clamp(48px, 7vw, 82px) clamp(18px, 5vw, 48px);
+}
+.reviews-heading { width: min(100%, 780px); margin: 0 auto 30px; text-align: center; }
+.reviews-heading h2 { margin: 9px 0 12px; color: #292747; font: 800 clamp(29px, 4vw, 40px)/1.15 'Poppins', sans-serif; }
+.reviews-heading h2 span { color: #7253c8; }
+.reviews-heading > p { margin: 0 auto; max-width: 650px; color: #77778b; font-size: 15px; line-height: 1.8; }
+.reviews-summary { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 9px; margin-top: 20px; color: #77758a; font-size: 12px; }
+.reviews-summary strong { color: #292747; font-size: 24px; font-weight: 900; }
+.review-stars { color: #f4b400; letter-spacing: 2px; white-space: nowrap; font-size: 17px; }
+.reviews-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; width: min(100%, 1120px); margin: 0 auto; align-items: stretch; }
+.review-card { display: flex; flex-direction: column; gap: 13px; min-width: 0; padding: 21px; border: 1px solid #e9e6ef; border-radius: 18px; background: #fff; box-shadow: 0 12px 32px rgba(41,39,71,.06); }
+.review-card-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.review-source { color: #858397; font-size: 11px; font-weight: 800; }
+.review-card p { flex: 1; margin: 0; color: #656477; font-size: 13px; line-height: 1.75; }
+.review-card > strong { color: #292747; font-size: 13px; font-weight: 900; }
+.reviews-footer { display: flex; flex-direction: column; align-items: center; gap: 12px; margin-top: 26px; text-align: center; }
+.reviews-footer > span { color: #858397; font-size: 11px; }
+.reviews-footer .google-profile-button { margin-top: 0; }
+@media (max-width: 900px) { .reviews-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 600px) {
+  .reviews-section { padding-inline: 16px; }
+  .reviews-grid { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .review-card { padding: 18px; }
+  .reviews-summary { gap: 7px; }
+  .reviews-summary strong { font-size: 22px; }
+  .reviews-heading > p { font-size: 14px; }
+}
