@@ -1,0 +1,24 @@
+/* Remove o realce azul padrão do navegador ao tocar nos elementos interativos. */
+html,
+body,
+body * {
+  -webkit-tap-highlight-color: transparent;
+}
+
+a,
+button,
+input,
+select,
+textarea,
+[role="button"],
+[tabindex] {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Mantém um indicador discreto para navegação por teclado,
+   mas evita o contorno automático após toques/cliques comuns. */
+:focus:not(:focus-visible) {
+  outline: none !important;
+}
+
+/* Não altera cores, sombras, transições ou estados hover definidos pelo site. */
