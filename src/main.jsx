@@ -171,17 +171,8 @@ function App() {
         const settings = settingsResult.error ? {} : Object.fromEntries((settingsResult.data || []).map((item) => [item.key, item.value]));
         const nextContent = { ...defaultContent, ...settings };
         const nextLogoUrl = settings.logo_path ? mediaUrl(settings.logo_path) : '';
-        const heroImage = publishedImages.find((item) => item.category === 'hero');
-        const criticalImageUrls = [nextLogoUrl, heroImage ? mediaUrl(heroImage.path) : ''].filter(Boolean);
-        const preloadImage = (url) => new Promise((resolve) => {
-          if (!url) return resolve();
-          const image = new Image();
-          image.onload = () => resolve();
-          image.onerror = () => resolve();
-          image.src = url;
-        });
-        await Promise.all(criticalImageUrls.map(preloadImage));
-        if (!active) return;
+        // Publish the fresh image paths to React immediately after the database response.
+        // Let the browser fetch image bytes independently; never block the gallery on hero/logo.
         setImages(publishedImages);
         setContent(nextContent);
         setLogoUrl(nextLogoUrl);
