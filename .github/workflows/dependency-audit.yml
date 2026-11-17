@@ -1,0 +1,33 @@
+name: Dependency security audit
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "23 9 * * 1"
+  pull_request:
+    paths:
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/dependency-audit.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Generate temporary lockfile
+        run: npm install --package-lock-only --ignore-scripts
+      - name: Check dependencies for high or critical vulnerabilities
+        run: npm audit --audit-level=high
+      - name: Install dependencies
+        run: npm install
+      - name: Verify production build
+        run: npm run build
