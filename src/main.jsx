@@ -201,7 +201,7 @@ function App() {
       <header className="product-page-header"><Brand logoUrl={logoReady ? logoUrl : ''} loading={!logoReady}/><a className="product-back-link" href={window.location.pathname}>← Voltar aos brinquedos</a></header>
       <main className="product-page-main">
         <div className="product-page-heading"><span className="toy-kind">{selectedToy.kind}</span><h1>{selectedToy.name}</h1><p>{selectedToy.detail}</p></div>
-        {productImages.length ? <div className="product-gallery">{productImages.map((photo, index) => <button className="product-gallery-item" type="button" key={photo.id || photo.path} onClick={() => setPreviewPhoto({ src: mediaUrl(photo.path), title: photo.title || `${selectedToy.name} — foto ${index + 1}` })} aria-label={`Ampliar foto ${index + 1} de ${selectedToy.name}`}><img src={mediaUrl(photo.path)} alt={photo.title || `${selectedToy.name} — foto ${index + 1}`} loading="lazy" decoding="async"/><span>Ampliar <ArrowUpRight size={15}/></span></button>)}</div> : <div className="product-gallery-empty"><span>{selectedToy.emoji}</span><h2>Fotos em breve</h2><p>Estamos preparando mais imagens deste produto. Volte em breve para conferir!</p></div>}
+        {productImages.length ? <div className="product-gallery">{productImages.map((photo, index) => <button className="product-gallery-item" type="button" key={photo.id || photo.path} onClick={() => setPreviewPhoto({ src: mediaUrl(photo.path), title: photo.title || `${selectedToy.name} — foto ${index + 1}` })} aria-label={`Ampliar foto ${index + 1} de ${selectedToy.name}`}><img src={mediaUrl(photo.path)} alt={photo.title || `${selectedToy.name} — foto ${index + 1}`} loading={index === 0 ? "eager" : "lazy"} fetchPriority={index === 0 ? "high" : "auto"} decoding="async"/><span>Ampliar <ArrowUpRight size={15}/></span></button>)}</div> : <div className="product-gallery-empty"><span>{selectedToy.emoji}</span><h2>Fotos em breve</h2><p>Estamos preparando mais imagens deste produto. Volte em breve para conferir!</p></div>}
       </main>
       <footer className="site-footer product-page-footer"><Brand footer logoUrl={logoReady ? logoUrl : ''} loading={!logoReady}/><p>{settingValue(content, 'footer_text')}</p><div className="footer-social"><a href={instagram} aria-label="Instagram" target="_blank" rel="noreferrer"><Instagram/></a></div><small>© {new Date().getFullYear()} Sonho Kids Brinquedos. Todos os direitos reservados.</small></footer>
     {previewPhoto && <div className="photo-lightbox" role="dialog" aria-modal="true" aria-label={previewPhoto.title} onClick={() => setPreviewPhoto(null)}><button className="photo-lightbox-close" type="button" aria-label="Fechar foto" onClick={() => setPreviewPhoto(null)}>×</button><img src={previewPhoto.src} alt={previewPhoto.title} onClick={(event) => event.stopPropagation()}/></div>}
@@ -215,10 +215,10 @@ function App() {
       <main className="catalog-page-main">
         <section className="section toys-section catalog-page-section">
           <div className="section-heading"><div className="eyebrow">SONHO KIDS BRINQUEDOS</div><h1>Nosso <span>catálogo</span></h1><p>Conheça todos os brinquedos e máquinas disponíveis para deixar sua comemoração ainda mais especial.</p></div>
-          <div className="toy-grid">{configuredToys.map((toy) => {
+          <div className="toy-grid">{configuredToys.map((toy, toyIndex) => {
             const toyImage = images.find((image) => image.category === toy.imageCategory);
             return <a className={`toy-card ${toy.color}`} key={toy.imageCategory} href={`?produto=${encodeURIComponent(toy.imageCategory)}`} aria-label={`Ver fotos de ${toy.name}`}>
-              <div className="toy-art">{toyImage ? <img className="real-site-photo" src={mediaUrl(toyImage.path)} alt={toy.name} loading="lazy" decoding="async"/> : <div className="toy-placeholder"><span className="toy-placeholder-glow"/><span className="toy-emoji">{toy.emoji}</span><small>IMAGEM EM BREVE</small></div>}<span className="toy-art-caption">{toy.visualLabel}</span><span className="toy-spark">✦</span></div>
+              <div className="toy-art">{toyImage ? <img className="real-site-photo" src={mediaUrl(toyImage.path)} alt={toy.name} loading={toyIndex === 0 ? "eager" : "lazy"} fetchPriority={toyIndex === 0 ? "high" : "auto"} decoding="async"/> : <div className="toy-placeholder"><span className="toy-placeholder-glow"/><span className="toy-emoji">{toy.emoji}</span><small>IMAGEM EM BREVE</small></div>}<span className="toy-art-caption">{toy.visualLabel}</span><span className="toy-spark">✦</span></div>
               <div className="toy-info"><span className="toy-kind">{toy.kind}</span><h3>{toy.name}</h3><p>{toy.detail}</p><span className="toy-card-cta">Ver fotos do produto <ArrowUpRight size={16}/></span></div>
             </a>;
           })}</div>
@@ -287,10 +287,10 @@ function App() {
       </section> : (
       <section className="section toys-section" id="brinquedos">
         <div className="section-heading"><div className="eyebrow">NOSSO MUNDO DE DIVERSÃO</div><h2>Escolha a alegria da <span>sua festa</span></h2><p>Opções para transformar aniversários, encontros e comemorações em momentos especiais.</p></div>
-        <div className="toy-grid">{configuredToys.map((toy) => {
+        <div className="toy-grid">{configuredToys.map((toy, toyIndex) => {
           const toyImage = images.find((image) => image.category === toy.imageCategory);
           return <a className={`toy-card ${toy.color}`} key={toy.imageCategory} href={`?produto=${encodeURIComponent(toy.imageCategory)}`} target="_blank" rel="noreferrer" aria-label={`Ver fotos de ${toy.name} em uma nova aba`}>
-            <div className="toy-art">{toyImage ? <img className="real-site-photo" src={mediaUrl(toyImage.path)} alt={toy.name} loading="lazy" decoding="async"/> : <div className="toy-placeholder"><span className="toy-placeholder-glow"/><span className="toy-emoji">{toy.emoji}</span><small>IMAGEM EM BREVE</small></div>}<span className="toy-art-caption">{toy.visualLabel}</span><span className="toy-spark">✦</span></div>
+            <div className="toy-art">{toyImage ? <img className="real-site-photo" src={mediaUrl(toyImage.path)} alt={toy.name} loading={toyIndex === 0 ? "eager" : "lazy"} fetchPriority={toyIndex === 0 ? "high" : "auto"} decoding="async"/> : <div className="toy-placeholder"><span className="toy-placeholder-glow"/><span className="toy-emoji">{toy.emoji}</span><small>IMAGEM EM BREVE</small></div>}<span className="toy-art-caption">{toy.visualLabel}</span><span className="toy-spark">✦</span></div>
             <div className="toy-info"><span className="toy-kind">{toy.kind}</span><h3>{toy.name}</h3><p>{toy.detail}</p><span className="toy-card-cta">Ver fotos do produto <ArrowUpRight size={16}/></span></div>
           </a>;
         })}</div>
@@ -305,7 +305,7 @@ function App() {
 
       <section className="events-section" id="eventos">
         <div className="section-heading"><div className="eyebrow">A ALEGRIA ACONTECE DE VERDADE</div><h2>Momentos especiais com a <span>Sonho Kids</span></h2><p>Veja mais registros dos nossos brinquedos e máquinas em ação nas comemorações.</p></div>
-        <div className="moments-grid">{galleryItems.map((item, i) => <div className={`moment-card moment-${(i % 3) + 1}`} key={item.image?.id || item.title || i}><div className="moment-art">{item.image ? <img className="real-site-photo" src={mediaUrl(item.image.path)} alt="Foto de demonstração de evento da Sonho Kids" loading="lazy" decoding="async"/> : <span>{item.emoji}</span>}<small>SONHO KIDS • EVENTOS</small></div></div>)}</div>
+        <div className="moments-grid">{galleryItems.map((item, i) => <div className={`moment-card moment-${(i % 3) + 1}`} key={item.image?.id || item.title || i}><div className="moment-art">{item.image ? <img className="real-site-photo" src={mediaUrl(item.image.path)} alt="Foto de demonstração de evento da Sonho Kids" loading={i === 0 ? "eager" : "lazy"} fetchPriority={i === 0 ? "high" : "auto"} decoding="async"/> : <span>{item.emoji}</span>}<small>SONHO KIDS • EVENTOS</small></div></div>)}</div>
         <div className="instagram-note"><Instagram/><p>Quer ver mais fotos dos nossos eventos?</p><a href={instagram} target="_blank" rel="noreferrer">Acompanhe nosso Instagram <ArrowUpRight size={16}/></a></div>
       </section>
 
