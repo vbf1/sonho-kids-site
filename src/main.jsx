@@ -160,24 +160,44 @@ function App() {
             console.warn('Não foi possível guardar o conteúdo do site em cache:', cacheError);
           }
         };
-        const imageRequest = supabase.from('site_images').select('id,path,category,title,sort_order,created_at').order('sort_order').order('created_at', { ascending: false });
-        const settingsRequest = supabase.from('site_settings').select('key,value');
-        const imageTask = imageRequest.then(({ data, error }) => {
+        // Public visitors read one CDN-cached manifest instead of waiting for two database queries.
+        // The admin publishes this file whenever site content or media changes.
+        let manifestLoaded = false;
+        try {
+          const response = await fetch(mediaUrl('published/site-manifest.json'), { cache: 'no-store' });
+          if (!response.ok) throw new Error('Manifesto público ainda não foi publicado.');
+          const manifest = await response.json();
+          if (manifest?.schemaVersion !== 1 || !Array.isArray(manifest.images) || !manifest.content) {
+            throw new Error('Manifesto público inválido.');
+          }
           if (!active) return;
-          const publishedImages = error ? [] : (data || []);
+          const publishedImages = manifest.images;
+          const nextContent = { ...defaultContent, ...manifest.content };
+          const nextLogoUrl = manifest.logoPath ? mediaUrl(manifest.logoPath) : '';
           setImages(publishedImages);
-          saveSiteCache({ images: publishedImages });
-        });
-        const settingsTask = settingsRequest.then(({ data, error }) => {
-          if (!active) return;
-          const settings = error ? {} : Object.fromEntries((data || []).map((item) => [item.key, item.value]));
-          const nextContent = { ...defaultContent, ...settings };
-          const nextLogoUrl = settings.logo_path ? mediaUrl(settings.logo_path) : '';
           setContent(nextContent);
           setLogoUrl(nextLogoUrl);
-          saveSiteCache({ content: nextContent, logoUrl: nextLogoUrl });
-        });
-        await Promise.all([imageTask, settingsTask]);
+          saveSiteCache({ images: publishedImages, content: nextContent, logoUrl: nextLogoUrl });
+          manifestLoaded = true;
+        } catch (manifestError) {
+          console.warn('Manifesto público indisponível; usando consulta de compatibilidade:', manifestError);
+        }
+        // Compatibility fallback for the first rollout or a temporary manifest issue.
+        if (!manifestLoaded) {
+          const [imageResult, settingsResult] = await Promise.all([
+            supabase.from('site_images').select('id,path,category,title,sort_order,created_at').order('sort_order').order('created_at', { ascending: false }),
+            supabase.from('site_settings').select('key,value')
+          ]);
+          if (!active) return;
+          const publishedImages = imageResult.error ? [] : (imageResult.data || []);
+          const settings = settingsResult.error ? {} : Object.fromEntries((settingsResult.data || []).map((item) => [item.key, item.value]));
+          const nextContent = { ...defaultContent, ...settings };
+          const nextLogoUrl = settings.logo_path ? mediaUrl(settings.logo_path) : '';
+          setImages(publishedImages);
+          setContent(nextContent);
+          setLogoUrl(nextLogoUrl);
+          saveSiteCache({ images: publishedImages, content: nextContent, logoUrl: nextLogoUrl });
+        }
       } catch (error) {
         console.error('Não foi possível carregar o conteúdo publicado:', error);
       } finally {
