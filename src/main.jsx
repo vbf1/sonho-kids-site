@@ -382,27 +382,46 @@ function App() {
         </div>
       </section>
 
-      <section className="google-profile-section" id="google">
-        <div className="google-profile-copy">
-          <div className="eyebrow">ENCONTRE A SONHO KIDS</div>
-          <h2>Estamos no <span>Google!</span></h2>
-          <p>Acesse o perfil oficial da Sonho Kids no Google para conferir as informações da empresa, ver fotos e ler as avaliações dos clientes diretamente na plataforma.</p>
-          <a className="google-profile-button" href="https://share.google/xNPHDRZ7yr1iwqNoG" target="_blank" rel="noopener noreferrer">
-            Visitar nossa página no Google <ArrowUpRight size={17}/>
+      <section className="google-profile-section reviews-section" id="google" aria-labelledby="reviews-title">
+        <div className="reviews-heading">
+          <div className="eyebrow">A OPINIÃO DE QUEM JÁ CONTRATOU</div>
+          <h2 id="reviews-title">Quem conhece, <span>recomenda!</span></h2>
+          <p>Veja alguns depoimentos de clientes que confiaram na Sonho Kids para deixar suas comemorações ainda mais especiais.</p>
+          <div className="reviews-summary"><strong>5,0</strong><span className="review-stars" aria-label="5 estrelas">★★★★★</span><span>5 depoimentos compartilhados por clientes</span></div>
+        </div>
+        <div className="reviews-grid">
+          <article className="review-card">
+            <div className="review-card-top"><span className="review-stars" aria-label="5 estrelas">★★★★★</span><span className="review-source">Google</span></div>
+            <p>“Gostaria de parabenizar toda a equipe pelo excelente serviço prestado no aniversário! Tudo foi realizado com muito carinho, organização e profissionalismo. As crianças aproveitaram bastante a piscina de bolinhas, a cama elástica e as delícias preparadas, como pipoca doce e salgada e algodão-doce. Destaco também a atenção e o cuidado dos monitores com as crianças, a qualidade e o sabor dos alimentos, sempre preparados e servidos com muita educação e simpatia. Outro ponto que merece elogio foi o cuidado com o espaço, deixando tudo organizado e limpo após o evento. Ficamos muito satisfeitos com o atendimento e recomendamos de olhos fechados! Parabéns pelo excelente trabalho!”</p>
+            <strong>Rony Alves</strong>
+          </article>
+          <article className="review-card">
+            <div className="review-card-top"><span className="review-stars" aria-label="5 estrelas">★★★★★</span><span className="review-source">Google</span></div>
+            <p>“Sem dúvidas os melhores, educação, gentileza, uma pipoca quentinha o tempo todo, um algodão doce impecável, e brinquedos novinhos e bem montados para as crianças se divertirem. Contratem sem medo, o melhor de todos !”</p>
+            <strong>Tamara Marques Assunção</strong>
+          </article>
+          <article className="review-card">
+            <div className="review-card-top"><span className="review-stars" aria-label="5 estrelas">★★★★★</span><span className="review-source">Google</span></div>
+            <p>“Aniversário do meu sobrinho foi outra coisa com os brinquedos, ele adorou”</p>
+            <strong>Felipe</strong>
+          </article>
+          <article className="review-card">
+            <div className="review-card-top"><span className="review-stars" aria-label="5 estrelas">★★★★★</span><span className="review-source">Google</span></div>
+            <p>“Tive uma ótima experiência”</p>
+            <strong>Ana Carolina</strong>
+          </article>
+          <article className="review-card">
+            <div className="review-card-top"><span className="review-stars" aria-label="5 estrelas">★★★★★</span><span className="review-source">Google</span></div>
+            <p>“A melhor.. brinquedos de confiança e ótimos profissionais !”</p>
+            <strong>Deyvide</strong>
+          </article>
+        </div>
+        <div className="reviews-footer">
+          <span>Depoimentos fornecidos pela Sonho Kids Brinquedos.</span>
+          <a className="google-profile-button" href="https://maps.app.goo.gl/pnvedqeCouwoCLBv8?g_st=ac" target="_blank" rel="noopener noreferrer">
+            Ver perfil e avaliações no Google <ArrowUpRight size={17}/>
           </a>
         </div>
-        <a className="google-preview-card" href="https://share.google/xNPHDRZ7yr1iwqNoG" target="_blank" rel="noopener noreferrer" aria-label="Consultar avaliações e informações oficiais da Sonho Kids no Google">
-          <div className="google-preview-top">
-            <span className="google-g" aria-hidden="true">G</span>
-            <span><strong>Avaliações no Google</strong><small>Perfil oficial da Sonho Kids</small></span>
-            <ArrowUpRight size={18}/>
-          </div>
-          <div className="google-preview-content">
-            <div className="google-preview-brand" aria-hidden="true">⭐</div>
-            <div><h3>Conheça a opinião dos clientes</h3><p>Consulte a nota, leia os comentários e veja fotos publicadas no perfil da Sonho Kids.</p><span>As avaliações são consultadas diretamente no Google para mostrar sempre a informação original.</span></div>
-          </div>
-          <div className="google-preview-footer"><span>Perfil oficial</span><span>Consultar no Google ↗</span></div>
-        </a>
       </section>
 
       <section className="contact-section" id="contato"><div className="contact-decoration">🎈</div><div><div className="eyebrow">{settingValue(content, 'contact_eyebrow')}</div><h2>{settingValue(content, 'contact_title')}</h2><p>{settingValue(content, 'contact_description')}</p></div></section>
