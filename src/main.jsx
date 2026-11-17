@@ -341,7 +341,7 @@ function App() {
 
       <section className="events-section" id="eventos">
         <div className="section-heading"><div className="eyebrow">A ALEGRIA ACONTECE DE VERDADE</div><h2>Momentos especiais com a <span>Sonho Kids</span></h2><p>Veja mais registros dos nossos brinquedos e máquinas em ação nas comemorações.</p></div>
-        <div className="moments-grid">{galleryItems.map((item, i) => <div className={`moment-card moment-${(i % 3) + 1}`} key={item.image?.id || item.title || i}><div className="moment-art">{item.image ? <img className="real-site-photo" src={mediaUrl(item.image.path)} alt="Foto de demonstração de evento da Sonho Kids" loading="lazy" decoding="async"/> : <span>{item.emoji}</span>}<small>SONHO KIDS • EVENTOS</small></div></div>)}</div>
+        <div className="moments-grid">{galleryItems.map((item, i) => <div className={`moment-card moment-${(i % 3) + 1}`} key={item.image?.id || item.title || i}><div className="moment-art">{item.image ? <img className="real-site-photo" src={mediaUrl(item.image.path)} alt={item.image.title || `Foto de evento da Sonho Kids ${i + 1}`} loading="lazy" decoding="async"/> : <span>{item.emoji}</span>}<small>SONHO KIDS • EVENTOS</small></div></div>)}</div>
         <div className="instagram-note"><Instagram/><p>Quer ver mais fotos dos nossos eventos?</p><a href={instagram} target="_blank" rel="noreferrer">Acompanhe nosso Instagram <ArrowUpRight size={16}/></a></div>
       </section>
 
