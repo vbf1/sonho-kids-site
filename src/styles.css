@@ -1101,3 +1101,54 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
 }
+
+
+/* Formulário guiado para pedidos de orçamento pelo WhatsApp. */
+.budget-section {
+  padding: clamp(48px, 7vw, 84px) 22px;
+  background: linear-gradient(145deg, #fffaf0 0%, #f8f4ff 52%, #f1f9ff 100%);
+}
+.budget-heading { width: min(100%, 760px); margin: 0 auto 28px; text-align: center; }
+.budget-heading h2 { margin: 9px 0 12px; color: #292747; font: 800 clamp(29px, 4vw, 40px)/1.15 'Poppins', sans-serif; }
+.budget-heading h2 span { color: #7253c8; }
+.budget-heading p { max-width: 650px; margin: 0 auto; color: #77778b; font-size: 15px; line-height: 1.7; }
+.budget-form {
+  width: min(100%, 850px); margin: 0 auto; padding: clamp(20px, 4vw, 34px);
+  border: 1px solid rgba(114,83,200,.13); border-radius: 22px; background: #fff;
+  box-shadow: 0 16px 48px rgba(41,39,71,.07);
+}
+.budget-products { min-width: 0; margin: 0 0 24px; padding: 0; border: 0; }
+.budget-products legend { margin-bottom: 12px; color: #292747; font-size: 15px; font-weight: 800; }
+.budget-products legend span, .budget-fields label span { color: #d34d79; }
+.budget-product-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.budget-product-option {
+  display: flex; align-items: center; gap: 10px; min-height: 54px; padding: 10px 12px;
+  border: 1px solid #ebe7f3; border-radius: 12px; background: #fffdfb; cursor: pointer;
+  color: #45435b; font-size: 13px;
+}
+.budget-product-option:has(input:checked) { border-color: #8c68cb; background: #f8f4ff; }
+.budget-product-option input { width: 18px; height: 18px; margin: 0; accent-color: #7253c8; flex: 0 0 auto; }
+.budget-product-option > span { font-size: 20px; }
+.budget-product-option b { font-weight: 800; }
+.budget-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 17px 14px; }
+.budget-fields label { display: flex; flex-direction: column; gap: 7px; color: #45435b; font-size: 13px; font-weight: 800; }
+.budget-fields input, .budget-fields select {
+  width: 100%; min-height: 46px; padding: 10px 12px; border: 1px solid #e5e1ed; border-radius: 10px;
+  background: #fff; color: #37354e; font: inherit; font-weight: 500;
+}
+.budget-fields input:focus, .budget-fields select:focus { border-color: #8c68cb; outline: 3px solid rgba(140,104,203,.14); }
+.budget-privacy-note { margin: 18px 0 14px; color: #858397; font-size: 11px; line-height: 1.6; }
+.budget-submit {
+  display: inline-flex; align-items: center; justify-content: center; gap: 9px; width: 100%; min-height: 52px;
+  padding: 12px 18px; border: 0; border-radius: 999px; background: #20c76a; color: #fff;
+  font-size: 14px; font-weight: 900; cursor: pointer; transition: transform .2s ease, box-shadow .2s ease;
+}
+.budget-submit:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 9px 24px rgba(32,199,106,.25); }
+.budget-submit:disabled { opacity: .48; cursor: not-allowed; }
+.budget-submit:focus-visible { outline: 3px solid #292747; outline-offset: 3px; }
+@media (max-width: 560px) {
+  .budget-section { padding-inline: 16px; }
+  .budget-form { padding: 19px 15px; border-radius: 17px; }
+  .budget-product-options, .budget-fields { grid-template-columns: minmax(0, 1fr); }
+  .budget-product-option { min-height: 49px; }
+}
