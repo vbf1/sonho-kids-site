@@ -358,7 +358,7 @@ function App() {
         <div className="google-profile-copy">
           <div className="eyebrow">ENCONTRE A SONHO KIDS</div>
           <h2>Estamos no <span>Google!</span></h2>
-          <p>Conheça nosso perfil da empresa, veja fotos, confira as informações e leia as avaliações de quem já conhece a Sonho Kids.</p>
+          <p>Acesse o perfil oficial da Sonho Kids no Google para conferir as informações da empresa, ver fotos e ler as avaliações dos clientes diretamente na plataforma.</p>
           <a className="google-profile-button" href="https://share.google/xNPHDRZ7yr1iwqNoG" target="_blank" rel="noopener noreferrer">
             Visitar nossa página no Google <ArrowUpRight size={17}/>
           </a>
