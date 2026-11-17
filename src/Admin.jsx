@@ -450,28 +450,40 @@ export default function Admin() {
     if (!selectedFiles.length) return;
     setBusy(true); setError(''); setNotice('');
     const uploadedPaths = [];
-    const insertedIds = [];
+    let insertedIds = [];
     try {
       for (const file of selectedFiles) {
         if (!file.type.startsWith('image/') || file.size > 8 * 1024 * 1024) throw new Error(file.name + ': use uma imagem de até 8 MB.');
       }
-      for (const originalFile of selectedFiles) {
-        const file = await prepareImageForUpload(originalFile);
-        const ext = file.name.split('.').pop().toLowerCase().replace(/[^a-z0-9]/g, '') || 'jpg';
-        const path = category + '/' + Date.now() + '-' + Math.random().toString(36).slice(2, 7) + '.' + ext;
-        const { error: uploadError } = await supabase.storage.from('site-media').upload(path, file, { contentType: file.type, cacheControl: '31536000' });
-        if (uploadError) throw uploadError;
-        uploadedPaths.push(path);
 
-        const title = originalFile.name.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ');
-        const { data: insertedImage, error: rowError } = await supabase
-          .from('site_images')
-          .insert({ category, title, path, sort_order: 0 })
-          .select('id')
-          .single();
-        if (rowError) throw rowError;
-        insertedIds.push(insertedImage.id);
+      // Process and upload two photos at a time: faster than serial uploads without
+      // overwhelming memory or the network on mobile devices.
+      const rows = [];
+      for (let index = 0; index < selectedFiles.length; index += 2) {
+        const batch = selectedFiles.slice(index, index + 2);
+        const results = await Promise.allSettled(batch.map(async (originalFile) => {
+          const file = await prepareImageForUpload(originalFile);
+          const ext = file.name.split('.').pop().toLowerCase().replace(/[^a-z0-9]/g, '') || 'jpg';
+          const path = category + '/' + Date.now() + '-' + Math.random().toString(36).slice(2, 7) + '.' + ext;
+          const { error: uploadError } = await supabase.storage.from('site-media').upload(path, file, { contentType: file.type, cacheControl: '31536000' });
+          if (uploadError) throw uploadError;
+          uploadedPaths.push(path);
+          const title = originalFile.name.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ');
+          return { category, title, path, sort_order: 0 };
+        }));
+        const failed = results.find((result) => result.status === 'rejected');
+        if (failed) throw failed.reason;
+        rows.push(...results.map((result) => result.value));
       }
+
+      // Save all metadata in one database request after every file is safely uploaded.
+      const { data: insertedImages, error: rowError } = await supabase
+        .from('site_images')
+        .insert(rows)
+        .select('id');
+      if (rowError) throw rowError;
+      insertedIds = (insertedImages || []).map((item) => item.id);
+
       await loadContent();
       setSelectedFiles([]);
       setNotice('Imagens enviadas e ajustadas automaticamente! O site público já pode exibi-las.');
@@ -481,9 +493,9 @@ export default function Admin() {
         const { error: deleteError } = await supabase.from('site_images').delete().in('id', insertedIds);
         if (deleteError) cleanupError = deleteError;
       }
-      if (!cleanupError && uploadedPaths.length) {
+      if (uploadedPaths.length) {
         const { error: storageError } = await supabase.storage.from('site-media').remove(uploadedPaths);
-        if (storageError) cleanupError = storageError;
+        if (storageError && !cleanupError) cleanupError = storageError;
       }
       const message = e.message || 'Não foi possível enviar as imagens.';
       setError(cleanupError
