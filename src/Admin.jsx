@@ -216,11 +216,6 @@ export default function Admin() {
   const [images, setImages] = useState([]);
   const [category, setCategory] = useState('cama-elastica');
   const [categoryPickerOpen, setCategoryPickerOpen] = useState(false);
-  const [logoPath, setLogoPath] = useState('');
-  const [logoFile, setLogoFile] = useState(null);
-  const [logoPreview, setLogoPreview] = useState('');
-  const [heroFile, setHeroFile] = useState(null);
-  const [heroPreview, setHeroPreview] = useState('');
   const [selectedFiles, setSelectedFiles] = useState([]);
   const galleryInputRef = useRef(null);
   const [siteSettings, setSiteSettings] = useState(defaultSettings);
@@ -232,12 +227,6 @@ export default function Admin() {
   const groupedImages = categoryOptions.map(([key, label]) => ({ key, label, items: images.filter((image) => image.category === key) })).filter((group) => group.items.length);
 
   useEffect(() => {
-    supabase.from('site_settings').select('value').eq('key', 'logo_path').maybeSingle().then(({ data, error: logoError }) => {
-      if (!logoError && data?.value) {
-        setLogoPath(data.value);
-        setLogoPreview(mediaUrl(data.value));
-      }
-    });
     supabase.auth.getSession().then(({ data }) => {
       const current = data.session;
       if (current?.user?.email?.toLowerCase() === OWNER) setSession(current);
@@ -259,8 +248,6 @@ export default function Admin() {
     if (imageError || settingsError) throw imageError || settingsError;
     setImages(data || []);
     const settingMap = Object.fromEntries((settings || []).map((item) => [item.key, item.value]));
-    setLogoPath(settingMap.logo_path || '');
-    setLogoPreview(settingMap.logo_path ? mediaUrl(settingMap.logo_path) : '');
     setSiteSettings({ ...defaultSettings, ...settingMap });
     try {
       const savedCatalog = settingMap.catalog_items ? JSON.parse(settingMap.catalog_items) : null;
@@ -371,11 +358,7 @@ export default function Admin() {
     try {
       const editedFile = await createEditedImageFile(editingImage.file, { ...editSettings, cropRect });
       const preview = URL.createObjectURL(editedFile);
-      if (editingImage.target === 'hero') {
-        setHeroFile(editedFile); setHeroPreview(preview);
-        closeImageEditor();
-        setNotice('Edição aplicada. A foto editada será enviada quando você publicar as imagens.');
-      } else if (editingImage.target === 'existing') {
+      if (editingImage.target === 'existing') {
         const item = editingImage.item;
         const path = item.category + '/' + Date.now() + '-' + Math.random().toString(36).slice(2, 7) + '.webp';
         const { error: uploadError } = await supabase.storage.from('site-media').upload(path, editedFile, { contentType: 'image/webp', cacheControl: '31536000' });
@@ -395,54 +378,6 @@ export default function Admin() {
         setNotice('Edição aplicada. A foto editada será enviada quando você publicar as imagens.');
       }
     } catch (e) { setError(e.message || 'Não foi possível editar a imagem.'); }
-    finally { setBusy(false); }
-  };
-
-  const uploadLogo = async () => {
-    if (!logoFile) return;
-    setBusy(true); setError(''); setNotice('');
-    try {
-      if (!logoFile.type.startsWith('image/') || logoFile.size > 8 * 1024 * 1024) throw new Error('Escolha uma imagem de até 8 MB.');
-      const ext = logoFile.name.split('.').pop().toLowerCase().replace(/[^a-z0-9]/g, '') || 'png';
-      const path = 'branding/logo-' + Date.now() + '.' + ext;
-      const { error: uploadError } = await supabase.storage.from('site-media').upload(path, logoFile, { contentType: logoFile.type, cacheControl: '31536000' });
-      if (uploadError) throw uploadError;
-      const { error: settingError } = await supabase.from('site_settings').upsert({ key: 'logo_path', value: path, updated_at: new Date().toISOString() });
-      if (settingError) throw settingError;
-      if (logoPath) await supabase.storage.from('site-media').remove([logoPath]);
-      setLogoPath(path); setLogoPreview(mediaUrl(path)); setLogoFile(null);
-      setNotice('Logo atualizada! Ela já está disponível no site público.');
-    } catch (e) { setError(e.message); }
-    finally { setBusy(false); }
-  };
-
-  const uploadHeroImage = async () => {
-    if (!heroFile) return;
-    setBusy(true); setError(''); setNotice('');
-    try {
-      if (!heroFile.type.startsWith('image/') || heroFile.size > 8 * 1024 * 1024) {
-        throw new Error('Escolha uma imagem de até 8 MB.');
-      }
-      const file = await prepareImageForUpload(heroFile);
-      const ext = file.name.split('.').pop().toLowerCase().replace(/[^a-z0-9]/g, '') || 'jpg';
-      const path = 'hero/' + Date.now() + '-' + Math.random().toString(36).slice(2, 7) + '.' + ext;
-      const { error: uploadError } = await supabase.storage.from('site-media').upload(path, file, { contentType: file.type, cacheControl: '31536000' });
-      if (uploadError) throw uploadError;
-      const { error: rowError } = await supabase.from('site_images').insert({
-        category: 'hero',
-        title: 'Imagem principal',
-        path,
-        sort_order: -1
-      });
-      if (rowError) {
-        await supabase.storage.from('site-media').remove([path]);
-        throw rowError;
-      }
-      setHeroFile(null);
-      setHeroPreview('');
-      await loadContent();
-      setNotice('Imagem principal atualizada! A nova foto já está selecionada para a primeira seção do site.');
-    } catch (e) { setError(e.message || 'Não foi possível atualizar a imagem principal.'); }
     finally { setBusy(false); }
   };
 
@@ -531,7 +466,7 @@ export default function Admin() {
   return <main className="admin-page"><header className="admin-top"><a className="admin-back" href="../"><ExternalLink size={17}/> Ir para o site</a><div className="admin-top-brand">{logoPreview ? <img src={logoPreview} alt="Logo Sonho Kids Brinquedos"/> : <b>Sonho Kids</b>}<span>Painel de conteúdo</span></div><button className="admin-logout" onClick={logout}><LogOut size={16}/> Sair</button></header><div className="admin-content"><div className="admin-heading"><span className="admin-kicker">GERENCIAMENTO DO SITE</span><h1>Olá! Vamos atualizar sua vitrine?</h1><p>As alterações salvas aqui aparecem no site público, inclusive no celular dos visitantes.</p></div>
   <nav className="admin-workflow" aria-label="Atalhos do painel">
     <strong>O que você deseja gerenciar?</strong>
-    <div><a href="#textos">Textos do site</a><a href="#produtos">Brinquedos e máquinas</a><a href="#identidade">Logo</a><a href="#foto-principal">Foto principal</a><a href="#enviar-fotos">Enviar fotos</a><a href="#fotos-publicadas">Organizar fotos</a></div>
+    <div><a href="#textos">Textos do site</a><a href="#produtos">Brinquedos e máquinas</a><a href="#identidade">Logo</a><a href="#enviar-fotos">Enviar fotos</a><a href="#fotos-publicadas">Organizar fotos</a></div>
     <small>Use esta sequência como guia: primeiro ajuste as informações, depois os produtos e por último as imagens.</small>
   </nav>{error && <div className="admin-alert error"><AlertCircle size={16}/>{error}</div>}{notice && <div className="admin-alert success"><CheckCircle2 size={16}/>{notice}</div>}
 
@@ -584,8 +519,6 @@ export default function Admin() {
     </React.Fragment>)}
     <button className="admin-primary" type="submit" disabled={busy}><Save size={16}/>{busy ? 'Salvando...' : 'Salvar todas as informações'}</button>
   </form></section>
-  <section className="admin-panel" id="identidade"><div className="admin-panel-title"><div className="admin-icon"><Settings2/></div><div><h2>3. Logo e identidade visual</h2><p>Troque a logo que aparece no cabeçalho e no rodapé do site.</p></div></div><div className="logo-editor">{logoPreview ? <img src={logoPreview} alt="Logo atual da Sonho Kids"/> : <div className="logo-placeholder">Sua logo aparecerá aqui</div>}<div className="logo-controls"><label className="admin-upload"><Upload size={17}/> Escolher nova logo<input type="file" accept="image/*" onChange={(e) => {const f=e.target.files?.[0];if(f){setLogoFile(f);setLogoPreview(URL.createObjectURL(f));}}}/></label><button className="admin-primary" onClick={uploadLogo} disabled={!logoFile || busy}><Save size={16}/> Salvar logo</button><small>PNG, JPG, WebP ou SVG • até 8 MB</small></div></div></section>
-  <section className="admin-panel" id="foto-principal"><div className="admin-panel-title"><div className="admin-icon"><ImagePlus/></div><div><h2>4. Foto principal da página inicial</h2><p>Troque a foto que aparece ao lado do título “Uma festa cheia de cor, sorrisos e diversão!”.</p></div></div><div className="hero-image-editor">{images.find((image) => image.category === 'hero') && !heroPreview ? <img className="hero-image-current" src={mediaUrl(images.find((image) => image.category === 'hero').path)} alt="Imagem principal atual do site"/> : heroPreview ? <img className="hero-image-current" src={heroPreview} alt="Prévia da nova imagem principal"/> : <div className="hero-image-current hero-image-empty">Nenhuma foto principal cadastrada</div>}<div className="hero-image-controls"><label className="admin-upload"><Upload size={17}/> Escolher nova imagem<input type="file" accept="image/*" onChange={(e) => {const f=e.target.files?.[0];if(f){setHeroFile(f);setHeroPreview(URL.createObjectURL(f));}}}/></label>{heroFile && <button type="button" className="image-edit-trigger" onClick={()=>startImageEditing(heroFile,'hero')}><SlidersHorizontal size={16}/> Editar foto</button>}<button className="admin-primary" type="button" onClick={uploadHeroImage} disabled={!heroFile || busy}><Save size={16}/> {busy ? 'Enviando...' : 'Salvar imagem principal'}</button><small>JPG, PNG ou WebP • até 8 MB. A nova imagem substitui visualmente a atual no site.</small></div></div></section>
   <section className="admin-panel" id="enviar-fotos"><div className="admin-panel-title"><div className="admin-icon"><ImagePlus/></div><div><h2>5. Enviar fotos para o site</h2><p>Envie fotos reais dos brinquedos e dos eventos direto do celular ou computador.</p></div></div><div className="upload-row"><div className="admin-select-label category-picker-field"><span>Onde a foto será exibida</span><button type="button" className="category-picker-trigger" onClick={()=>setCategoryPickerOpen(true)} aria-haspopup="dialog" aria-expanded={categoryPickerOpen}><span><small>SEÇÃO SELECIONADA</small><strong>{categoryLabel(category)}</strong></span><ChevronDown size={19}/></button></div><button type="button" className="admin-file-drop" onClick={() => galleryInputRef.current?.click()} disabled={busy}><Upload/><b>Selecionar fotos</b><span>Você pode escolher várias imagens</span></button><input ref={galleryInputRef} className="admin-file-input-hidden" type="file" accept="image/*" multiple aria-label="Selecionar fotos para enviar" onChange={(e)=>{const files=Array.from(e.target.files || []);if(files.length)setSelectedFiles((current)=>[...current,...files]);e.target.value='';}}/></div>{selectedFiles.length>0 && <div className="selected-files image-edit-list">{selectedFiles.map((f,index)=><div className="image-edit-file" key={f.name+'-'+index}><span>{f.name}</span><div className="image-edit-file-actions"><button type="button" className="image-edit-trigger" onClick={()=>startImageEditing(f,'gallery',index)}><SlidersHorizontal size={14}/> Editar</button><button type="button" className="selected-file-remove" aria-label={`Remover ${f.name} da seleção`} title="Remover foto selecionada" onClick={()=>setSelectedFiles((current)=>current.filter((_,fileIndex)=>fileIndex!==index))}><X size={17}/></button></div></div>)}</div>}<button className="admin-primary upload-submit" onClick={uploadImages} disabled={!selectedFiles.length || busy}>{busy ? 'Enviando...' : <><Upload size={17}/> Enviar {selectedFiles.length || ''} foto(s)</>}</button><small className="admin-hint">Fotos JPG, PNG e WebP são redimensionadas automaticamente (máximo 1600 × 1200), sem deformar. GIF e SVG são preservados.</small></section>
   <section className="admin-panel" id="fotos-publicadas"><div className="admin-panel-title"><div className="admin-icon"><Images/></div><div><h2>6. Organizar fotos publicadas</h2><p>Aqui você identifica exatamente onde cada foto aparece. As imagens estão separadas por seção do site.</p></div><strong className="admin-count">{images.length} fotos</strong></div>
   <div className="photo-manager-guide"><strong>Como organizar:</strong><span><b>Nome da foto:</b> identificação interna para você reconhecer a imagem.</span><span><b>Seção do site:</b> escolha onde a imagem será exibida.</span><span><b>Excluir:</b> remove a foto do site e do armazenamento. Essa ação não pode ser desfeita.</span></div>
