@@ -6,7 +6,7 @@ import './admin.css';
 const ADMIN_BRAND_IMAGE = 'https://odnvspjizoufclhtzxuh.supabase.co/storage/v1/object/public/site-media/hero/1793832838141-0p4l0.webp';
 
 const OWNER = 'victor.vbf99@gmail.com';
-const categories = [['eventos', 'Fotos de eventos'], ['hero', 'Foto principal da primeira seção']];
+const categories = [['eventos', 'Fotos de eventos']];
 const defaultCatalogItems = [{"id":"cama-elastica","name":"Cama elástica","detail":"Pulos, energia e muita diversão para a criançada.","kind":"BRINQUEDO","emoji":"🤸","color":"pink","visualLabel":"ENERGIA E MOVIMENTO","active":true},{"id":"piscina-bolinhas","name":"Piscina de bolinhas","detail":"Um espaço colorido para brincar e se divertir.","kind":"BRINQUEDO","emoji":"🟡","color":"blue","visualLabel":"UM MAR DE CORES","active":true},{"id":"maquina-pipoca","name":"Máquina de pipoca","detail":"O cheirinho e o sabor que combinam com festa.","kind":"MÁQUINA","emoji":"🍿","color":"yellow","visualLabel":"SABOR DE FESTA","active":true},{"id":"algodao-doce","name":"Máquina de algodão-doce","detail":"Um toque doce e especial para seu evento.","kind":"MÁQUINA","emoji":"🍭","color":"purple","visualLabel":"UM TOQUE DE DOÇURA","active":true}];
 const textFieldGroups = [
   { id: 'hero', title: '1. Primeira seção — apresentação', fields: [
@@ -248,7 +248,7 @@ export default function Admin() {
       supabase.from('site_settings').select('key,value')
     ]);
     if (imageError || settingsError) throw imageError || settingsError;
-    setImages(data || []);
+    setImages((data || []).filter((image) => image.category !== 'hero'));
     const settingMap = Object.fromEntries((settings || []).map((item) => [item.key, item.value]));
     setSiteSettings({ ...defaultSettings, ...settingMap });
     try {
@@ -468,7 +468,7 @@ export default function Admin() {
   return <main className="admin-page"><header className="admin-top"><a className="admin-back" href="../"><ExternalLink size={17}/> Ir para o site</a><div className="admin-top-brand"><img src={ADMIN_BRAND_IMAGE} alt="Logo Sonho Kids Brinquedos"/><span>Painel de conteúdo</span></div><button className="admin-logout" onClick={logout}><LogOut size={16}/> Sair</button></header><div className="admin-content"><div className="admin-heading"><span className="admin-kicker">GERENCIAMENTO DO SITE</span><h1>Olá! Vamos atualizar sua vitrine?</h1><p>As alterações salvas aqui aparecem no site público, inclusive no celular dos visitantes.</p></div>
   <nav className="admin-workflow" aria-label="Atalhos do painel">
     <strong>O que você deseja gerenciar?</strong>
-    <div><a href="#textos">Textos do site</a><a href="#produtos">Brinquedos e máquinas</a><a href="#enviar-fotos">Logo</a><a href="#enviar-fotos">Enviar fotos</a><a href="#fotos-publicadas">Organizar fotos</a></div>
+    <div><a href="#textos">Textos do site</a><a href="#produtos">Brinquedos e máquinas</a><a href="#enviar-fotos">Enviar fotos</a><a href="#fotos-publicadas">Organizar fotos</a></div>
     <small>Use esta sequência como guia: primeiro ajuste as informações, depois os produtos e por último as imagens.</small>
   </nav>{error && <div className="admin-alert error"><AlertCircle size={16}/>{error}</div>}{notice && <div className="admin-alert success"><CheckCircle2 size={16}/>{notice}</div>}
 
