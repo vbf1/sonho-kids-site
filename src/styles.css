@@ -1162,3 +1162,17 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   font-weight: 700;
   line-height: 1.5;
 }
+
+
+.budget-field-error {
+  display: block;
+  margin-top: 6px;
+  color: #b42318;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.budget-form input[aria-invalid="true"] {
+  border-color: #b42318;
+}
